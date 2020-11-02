@@ -1,6 +1,19 @@
 const url = 'data.json'
 let dataScence = null
-let matrixArray = []
+
+const WIDTH = window.innerWidth
+const HEIGHT = window.innerHeight
+const renderer = new THREE.WebGLRenderer({antialias: true})
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT)
+
+const geometry = new THREE.Geometry()
+const matrix = new THREE.Matrix4()
+
+const material = new THREE.MeshBasicMaterial({color: 0xff0000});
+const mesh = new THREE.Mesh(geometry, material);
+
 
 async function getFile(url) {
     try {
@@ -31,9 +44,8 @@ const createTable = () => {
 const getMultiplicationMatrix = (e) => {
     // Это Хардкод осторожно !
     try {
-        matrixArray = [
-            document.table.n11.value,
-            document.table.n12.value,
+        console.log(document.table.n11.value,
+            typeof document.table.n12.value,
             document.table.n13.value,
             document.table.n14.value,
             document.table.n21.value,
@@ -47,37 +59,34 @@ const getMultiplicationMatrix = (e) => {
             document.table.n41.value,
             document.table.n42.value,
             document.table.n43.value,
-            document.table.n44.value,
-        ]
+            document.table.n44.value)
+        matrix.set(
+            parseFloat(document.table.n11.value),
+            parseFloat(document.table.n12.value),
+            parseFloat(document.table.n13.value),
+            parseFloat(document.table.n14.value),
+            parseFloat(document.table.n21.value),
+            parseFloat(document.table.n22.value),
+            parseFloat(document.table.n23.value),
+            parseFloat(document.table.n24.value),
+            parseFloat(document.table.n31.value),
+            parseFloat(document.table.n32.value),
+            parseFloat(document.table.n33.value),
+            parseFloat(document.table.n34.value),
+            parseFloat(document.table.n41.value),
+            parseFloat(document.table.n42.value),
+            parseFloat(document.table.n43.value),
+            parseFloat(document.table.n44.value)
+        )
         // console.log(matrix)
+        geometry.applyMatrix4(matrix)
+
     } catch (e) {
         console.log('getMultiplicationMatrix: ', e)
     }
 }
 
-let workWithGeometry = (dataScence) => {
-
-    const WIDTH = window.innerWidth;
-    const HEIGHT = window.innerHeight;
-    const renderer = new THREE.WebGLRenderer({antialias: true});
-
-    renderer.setSize(WIDTH, HEIGHT);
-    renderer.setClearColor(0xdfe9c8, 1);
-    document.body.appendChild(renderer.domElement);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT);
-    camera.position.z = 50;
-    scene.add(camera);
-
-    function render() {
-        requestAnimationFrame(render);
-        renderer.render(scene, camera);
-    }
-
-    render();
-
-    const geometry = new THREE.Geometry();
+const addedVectors = (dataScence) => {
     try {
         for (property in dataScence) {
             if (property === 'points') {
@@ -91,52 +100,30 @@ let workWithGeometry = (dataScence) => {
                 let segment1 = dataScence[property][0]
                 let segment2 = dataScence[property][1]
                 let segment3 = dataScence[property][2]
-                geometry.faces.push(new THREE.Face3(segment1, segment2, segment3));
+                geometry.faces.push(new THREE.Face3(segment1, segment2, segment3))
+                geometry.computeBoundingSphere()
             }
         }
     } catch (e) {
         console.log('for dataScence:', e)
     }
-
-    geometry.computeBoundingSphere();
-
-    const matrix = new THREE.Matrix4()
-    console.log(matrixArray)
-    // Матрица масштабирования по оси:
-    // matrix.makeScale(0, 0, 0)
-
-    // angle
-    // const theta =
-    // Матрица поворота вокруг оси X:
-    // matrix.makeRotationX()
-    // Матрица поворота вокруг оси Y:
-    // matrix.makeRotationY()
-    // Матрица поворота вокруг оси Z:
-    // matrix.makeRotationZ()
-
-    // Матрица косого сдвига оси X по оси Y с коэффициентом k:
-
-    // matrix.makeShear(0 ,0, 0)
+}
 
 
-    // Матрица ОПП с фокусным расстоянием f:
-    // matrix.makeTranslation(0 ,0, 0)
-    // matrix.set(
-    //     1, 0, 0, 0,
-    //     0, 1, 0, 0,
-    //     0, 0, 1, 0,
-    //     0, 0, 0, 0,
-    // )
+const workWithGeometry = () => {
+    renderer.setSize(WIDTH, HEIGHT)
+    renderer.setClearColor(0xdfe9c8, 1)
+    document.body.appendChild(renderer.domElement)
 
-    // geometry.applyMatrix4(m)
-    // console.log(geometry.applyMatrix4())
+    camera.position.z = 50;
+    scene.add(camera)
 
-    const material = new THREE.MeshBasicMaterial({color: 0xff0000});
-    const mesh = new THREE.Mesh(geometry, material);
+    function render() {
+        requestAnimationFrame(render)
+        renderer.render(scene, camera)
+    }
 
-    scene.add(mesh);
-
-    // cube.rotation.set(0.4, 0.2, 0);
+    render()
 }
 
 async function main() {
@@ -144,9 +131,14 @@ async function main() {
 
     dataScence = await getFile(url)
 
-    workWithGeometry(dataScence)
+    workWithGeometry()
+    addedVectors(dataScence)
+
+    scene.add(mesh);
+
     const sendMatrixButton = document.table.sendMatrix
     sendMatrixButton.addEventListener("click", getMultiplicationMatrix)
+
 }
 
 main()
