@@ -138,7 +138,6 @@ async function main() {
 
     const sendMatrixButton = document.table.sendMatrix
     sendMatrixButton.addEventListener("click", getMultiplicationMatrix)
-
 }
 
 main()
