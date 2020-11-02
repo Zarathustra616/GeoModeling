@@ -1,6 +1,6 @@
 const url = 'data.json'
 let dataScence = null
-
+//
 const WIDTH = window.innerWidth
 const HEIGHT = window.innerHeight
 const renderer = new THREE.WebGLRenderer({antialias: true})
@@ -13,7 +13,6 @@ const matrix = new THREE.Matrix4()
 
 const material = new THREE.MeshBasicMaterial({color: 0xff0000});
 const mesh = new THREE.Mesh(geometry, material);
-
 
 async function getFile(url) {
     try {
@@ -39,6 +38,31 @@ const createTable = () => {
         </tr>`
         )
     }
+}
+
+const render = () => {
+    requestAnimationFrame(render)
+    renderer.render(scene, camera)
+}
+
+const setLookAt = () => {
+    const dataGeometry = geometry.clone()
+    let x = 0
+    let y = 0
+    let z = 0
+    let lenVectors = 0
+    for (let vector of dataGeometry.vertices) {
+        console.log(vector)
+        x += vector.x
+        y += vector.y
+        z += vector.z
+        lenVectors += 1
+    }
+    x = x / lenVectors
+    y = y / lenVectors
+    z = z / lenVectors
+    camera.lookAt(new THREE.Vector3(x, y, z))
+    console.log(x,y,z)
 }
 
 const getMultiplicationMatrix = (e) => {
@@ -106,10 +130,12 @@ const getMultiplicationMatrix = (e) => {
             parseFloat(multiplicationMatrix[11]),
             parseFloat(multiplicationMatrix[12]),
             parseFloat(multiplicationMatrix[13]),
-            parseFloat(multiplicationMatrix[14])
+            parseFloat(multiplicationMatrix[14]),
+            parseFloat(multiplicationMatrix[15])
         )
-        // console.log(matrix)
         geometry.applyMatrix4(matrix)
+        setLookAt()
+
     } catch (e) {
         console.log('getMultiplicationMatrix: ', e)
     }
@@ -134,10 +160,9 @@ const addedVectors = (dataScence) => {
             }
         }
     } catch (e) {
-        console.log('for dataScence:', e)
+        console.log('addedVectors:', e)
     }
 }
-
 
 const workWithGeometry = () => {
     renderer.setSize(WIDTH, HEIGHT)
@@ -146,11 +171,6 @@ const workWithGeometry = () => {
 
     camera.position.z = 50;
     scene.add(camera)
-
-    function render() {
-        requestAnimationFrame(render)
-        renderer.render(scene, camera)
-    }
 
     render()
 }
@@ -163,7 +183,7 @@ async function main() {
     workWithGeometry()
     addedVectors(dataScence)
 
-    scene.add(mesh);
+    scene.add(mesh)
 
     const sendMatrixButton = document.table.sendMatrix
     sendMatrixButton.addEventListener("click", getMultiplicationMatrix)
