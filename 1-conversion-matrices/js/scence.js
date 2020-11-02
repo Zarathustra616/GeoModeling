@@ -43,44 +43,73 @@ const createTable = () => {
 
 const getMultiplicationMatrix = (e) => {
     // Это Хардкод осторожно !
+    let multiplicationMatrix = [
+        document.table.n11.value,
+        document.table.n12.value,
+        document.table.n13.value,
+        document.table.n14.value,
+        document.table.n21.value,
+        document.table.n22.value,
+        document.table.n23.value,
+        document.table.n24.value,
+        document.table.n31.value,
+        document.table.n32.value,
+        document.table.n33.value,
+        document.table.n34.value,
+        document.table.n41.value,
+        document.table.n42.value,
+        document.table.n43.value,
+        document.table.n44.value
+    ]
     try {
-        console.log(document.table.n11.value,
-            typeof document.table.n12.value,
-            document.table.n13.value,
-            document.table.n14.value,
-            document.table.n21.value,
-            document.table.n22.value,
-            document.table.n23.value,
-            document.table.n24.value,
-            document.table.n31.value,
-            document.table.n32.value,
-            document.table.n33.value,
-            document.table.n34.value,
-            document.table.n41.value,
-            document.table.n42.value,
-            document.table.n43.value,
-            document.table.n44.value)
+        for (let idx = 0; idx < multiplicationMatrix.length; idx++) {
+            if (multiplicationMatrix[idx].split(' ')[0] === 'Sin') {
+                multiplicationMatrix[idx] = Math.sin(parseFloat(multiplicationMatrix[idx].split(' ')[1]) * Math.PI / 180).toFixed(4)
+                console.log(multiplicationMatrix[idx])
+            }
+        }
+        for (let idx = 0; idx < multiplicationMatrix.length; idx++) {
+            if (multiplicationMatrix[idx].split(' ')[0] === '-Sin') {
+                multiplicationMatrix[idx] = -Math.sin(parseFloat(multiplicationMatrix[idx].split(' ')[1]) * Math.PI / 180).toFixed(4)
+                console.log(multiplicationMatrix[idx])
+            }
+        }
+        for (let idx = 0; idx < multiplicationMatrix.length; idx++) {
+            if (multiplicationMatrix[idx].split(' ')[0] === 'Cos') {
+                multiplicationMatrix[idx] = Math.cos(parseFloat(multiplicationMatrix[idx].split(' ')[1]) * Math.PI / 180).toFixed(4)
+                console.log(multiplicationMatrix[idx])
+            }
+        }
+        for (let idx = 0; idx < multiplicationMatrix.length; idx++) {
+            if (multiplicationMatrix[idx].split(' ')[0] === '-Cos') {
+                multiplicationMatrix[idx] = -Math.cos(parseFloat(multiplicationMatrix[idx].split(' ')[1]) * Math.PI / 180).toFixed(4)
+                console.log(multiplicationMatrix[idx])
+            }
+        }
+    } catch (e) {
+        console.log('Check getMultiplicationMatrix Sin/Cos: ', e)
+    }
+    try {
+        console.log(multiplicationMatrix)
         matrix.set(
-            parseFloat(document.table.n11.value),
-            parseFloat(document.table.n12.value),
-            parseFloat(document.table.n13.value),
-            parseFloat(document.table.n14.value),
-            parseFloat(document.table.n21.value),
-            parseFloat(document.table.n22.value),
-            parseFloat(document.table.n23.value),
-            parseFloat(document.table.n24.value),
-            parseFloat(document.table.n31.value),
-            parseFloat(document.table.n32.value),
-            parseFloat(document.table.n33.value),
-            parseFloat(document.table.n34.value),
-            parseFloat(document.table.n41.value),
-            parseFloat(document.table.n42.value),
-            parseFloat(document.table.n43.value),
-            parseFloat(document.table.n44.value)
+            parseFloat(multiplicationMatrix[0]),
+            parseFloat(multiplicationMatrix[1]),
+            parseFloat(multiplicationMatrix[2]),
+            parseFloat(multiplicationMatrix[3]),
+            parseFloat(multiplicationMatrix[4]),
+            parseFloat(multiplicationMatrix[5]),
+            parseFloat(multiplicationMatrix[6]),
+            parseFloat(multiplicationMatrix[7]),
+            parseFloat(multiplicationMatrix[8]),
+            parseFloat(multiplicationMatrix[9]),
+            parseFloat(multiplicationMatrix[10]),
+            parseFloat(multiplicationMatrix[11]),
+            parseFloat(multiplicationMatrix[12]),
+            parseFloat(multiplicationMatrix[13]),
+            parseFloat(multiplicationMatrix[14])
         )
         // console.log(matrix)
         geometry.applyMatrix4(matrix)
-
     } catch (e) {
         console.log('getMultiplicationMatrix: ', e)
     }
