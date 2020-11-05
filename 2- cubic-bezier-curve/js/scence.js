@@ -9,12 +9,14 @@ const renderer = new THREE.WebGLRenderer({antialias: true})
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT)
 
-const geometry = new THREE.Geometry()
-const curve = new THREE.CubicBezierCurve3()
+let curve = null
+let arrayVectors = []
+const geometry = new THREE.BufferGeometry()
+const geometryVectors = new THREE.Geometry()
+
 const matrix = new THREE.Matrix4()
 
-const material = new THREE.MeshBasicMaterial({color: 0xff0000});
-const mesh = new THREE.Mesh(geometry, material);
+const material = new THREE.LineBasicMaterial({color: 0xff0000});
 
 async function getFile(url) {
     try {
@@ -47,13 +49,18 @@ const render = () => {
     renderer.render(scene, camera)
 }
 
+const getVectorsFromGeometry = (geometry) => {
+    dataGeometry = geometry.clone()
+    return dataGeometry.vertices
+}
+
 const setLookAt = () => {
-    const dataGeometry = geometry.clone()
+    const vectors = getVectorsFromGeometry(geometryVectors)
     let x = 0
     let y = 0
     let z = 0
     let lenVectors = 0
-    for (let vector of dataGeometry.vertices) {
+    for (let vector of vectors) {
         console.log("setLookAt vector: ", vector)
         x += vector.x
         y += vector.y
@@ -65,6 +72,29 @@ const setLookAt = () => {
     z = parseFloat(z / lenVectors).toFixed(4)
     camera.lookAt(new THREE.Vector3(x, y, z))
     console.log("setLookAt", x, y, z)
+}
+
+const setCurve = (vectors) => {
+        curve = new THREE.CubicBezierCurve3(
+        vectors[0],
+        vectors[1],
+        vectors[2],
+        vectors[3],
+        )
+
+        const points = curve.getPoints(50)
+        geometry.setFromPoints(points)
+
+        const curveObject = new THREE.Line(geometry, material)
+
+        scene.add(curveObject)
+}
+
+const transformGeometryVectorsToGeometry = () => {
+    geometryVectors.applyMatrix4(matrix)
+    const vectors = getVectorsFromGeometry(geometryVectors)
+    setCurve(vectors)
+    console.log(vectors)
 }
 
 const getMultiplicationMatrix = (e) => {
@@ -127,7 +157,7 @@ const getMultiplicationMatrix = (e) => {
             parseFloat(multiplicationMatrix[15])
         )
         try {
-            geometry.applyMatrix4(matrix)
+            transformGeometryVectorsToGeometry()
         } catch (e) {
             console.log('TABLE INPUT: ', e)
         }
@@ -138,7 +168,8 @@ const getMultiplicationMatrix = (e) => {
     }
 }
 
-const addedVectors = (dataScence) => {
+const addedCubicBezierCurve = (dataScence) => {
+    let arrayVectors = []
     console.log("addedVectors dataScence", dataScence)
     try {
         for (property in dataScence) {
@@ -147,19 +178,28 @@ const addedVectors = (dataScence) => {
                     let x = dataScence[property][numberArray][0]
                     let y = dataScence[property][numberArray][1]
                     let z = dataScence[property][numberArray][2]
-                    geometry.vertices.push(new THREE.Vector3(x, y, z))
+                    arrayVectors.push(new THREE.Vector3(x, y, z))
+                    geometryVectors.vertices.push(new THREE.Vector3(x, y, z))
                 }
             } else if (property === 'segments') {
                 let segment1 = dataScence[property][0]
                 let segment2 = dataScence[property][1]
                 let segment3 = dataScence[property][2]
-                geometry.faces.push(new THREE.Face3(segment1, segment2, segment3))
-                geometry.computeBoundingSphere()
+                geometryVectors.faces.push(new THREE.Face3(segment1, segment2, segment3))
+                geometryVectors.computeBoundingSphere()
             }
         }
+        console.log(arrayVectors)
+
     } catch (e) {
-        console.log('addedVectors:', e)
+        console.warn('addedCubicBezierCurve property:', e)
     }
+    try {
+        setCurve(arrayVectors)
+    } catch (e) {
+        console.warn('addedCubicBezierCurve curve:', e)
+    }
+
 }
 
 const workWithGeometry = () => {
@@ -179,9 +219,9 @@ async function main() {
     dataScence = await getFile(url)
 
     workWithGeometry()
-    addedVectors(dataScence)
+    addedCubicBezierCurve(dataScence)
 
-    scene.add(mesh)
+    // scene.add(mesh)
 
     const sendMatrixButton = document.table.sendMatrix
     sendMatrixButton.addEventListener("click", getMultiplicationMatrix)
