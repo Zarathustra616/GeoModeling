@@ -2,7 +2,7 @@
 import Stats from '../../../libs/stats.module.js';
 
 import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
-import * as THREE from "../../../libs/three.module";
+import * as THREE from "../../../libs/three.module.js";
 
 const gui = new dat.GUI({height: 5 * 32 - 1});
 
