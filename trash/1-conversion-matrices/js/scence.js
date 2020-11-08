@@ -4,16 +4,17 @@ let dataScence = null
 const WIDTH = window.innerWidth
 const HEIGHT = window.innerHeight
 console.log(WIDTH, HEIGHT)
+
 const renderer = new THREE.WebGLRenderer({antialias: true})
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT)
 
+
 const geometry = new THREE.Geometry()
-const curve = new THREE.CubicBezierCurve3()
 const matrix = new THREE.Matrix4()
 
-const material = new THREE.MeshBasicMaterial({color: 0xff0000});
+const material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true});
 const mesh = new THREE.Mesh(geometry, material);
 
 async function getFile(url) {
