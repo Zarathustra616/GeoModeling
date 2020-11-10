@@ -1,6 +1,6 @@
 // init
 import Stats from '../../../libs/stats.module.js';
-
+import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/OrbitControls.js';
 import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../../libs/three.module.js";
 
@@ -99,12 +99,23 @@ container.appendChild(renderer.domElement)
 
 const scene = new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(70, WIDTH/HEIGHT)
-camera.position.z = 50
 
-const cameraPerspective = new THREE.PerspectiveCamera(50, WIDTH/HEIGHT)
-const cameraOrtho = new THREE.OrthographicCamera(WIDTH / -2, WIDTH / 2,
-                                                 HEIGHT / 2, HEIGHT / -2)
+const cameraPerspective = new THREE.PerspectiveCamera(45, WIDTH/HEIGHT,1, 1000)
+cameraPerspective.position.set(0,0,100)
+
+var fov_y   = 45;
+var depht_s = Math.tan(fov_y/2.0 * Math.PI/180.0) * 2.0;
+var Z = 100;
+var aspect = WIDTH/HEIGHT;
+var size_y = depht_s * Z;
+var size_x = depht_s * Z * aspect;
+
+
+const cameraOrtho = new THREE.OrthographicCamera(-size_x/2,  size_x/2,
+    size_y/2, -size_y/2,1, 1000)
+cameraOrtho.position.set(0,0,100)
+
+
 
 const cameraRig = new THREE.Group();
 cameraRig.add(cameraPerspective);
@@ -112,15 +123,19 @@ cameraRig.add(cameraOrtho);
 
 scene.add(cameraRig);
 
-let activeCamera = cameraPerspective
+let activeCamera = cameraOrtho
 
-var boxGeometry = new THREE.BoxGeometry(10, 10, 10);
-var basicMaterial = new THREE.MeshBasicMaterial({color: 0x0095DD});
+var boxGeometry = new THREE.BoxGeometry(50, 50, 50);
+var basicMaterial = new THREE.MeshBasicMaterial({color: 0x0095DD, wireframe: true});
 var cube = new THREE.Mesh(boxGeometry, basicMaterial);
 
-cameraRig.add(cube)
 
+cameraRig.add(cube)
 scene.add(cube);
+
+const controls = new OrbitControls(activeCamera, renderer.domElement );
+
+controls.update();
 
 let stats
 
@@ -140,6 +155,7 @@ async function getFile(url) {
     }
 }
 
+
 function onKeyDown(event) {
     switch (event.keyCode) {
         case 79: /*O*/
@@ -150,6 +166,8 @@ function onKeyDown(event) {
             activeCamera = cameraPerspective;
             break;
     }
+    const controls = new OrbitControls(activeCamera, renderer.domElement );
+    controls.update();
 }
 
 async function main() {
@@ -162,6 +180,7 @@ async function main() {
     // window.addEventListener('resize', onWindowResize, false)
     document.addEventListener('keydown', onKeyDown, false)
     render();
+    animate();
 }
 
 main()
