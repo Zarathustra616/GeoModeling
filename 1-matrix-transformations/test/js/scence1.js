@@ -4,7 +4,7 @@ import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../../libs/three.module.js";
 
 //Init Gui Table
-let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop
+let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel
 //Init Json
 const url = 'data.json'
 let dataScence = null
@@ -18,14 +18,14 @@ let fov_y, depht_s, Z, aspect, size_y, size_x
 //Init geometry
 const geometry = new THREE.Geometry()
 const matrix = new THREE.Matrix4()
-
-const material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true});
+//Init mesh
+const material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true})
 const mesh = new THREE.Mesh(geometry, material);
 
-
-
 const setParams = () => params = {
-    Parallel: 0,
+    ParallelX: 0,
+    ParallelY: 0,
+    ParallelZ: 0,
     ScalingX: 0,
     ScalingY: 0,
     ScalingZ: 0,
@@ -45,58 +45,160 @@ const setParams = () => params = {
 
 const addFolderScaling = () => {
     folderScaling.add(params, 'ScalingX').name('По оси X :').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            params.ScalingX, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.ScalingX', params.ScalingX)
     })
     folderScaling.add(params, 'ScalingY').name('По оси Y :').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            1, 0, 0, 0,
+            0, params.ScalingY, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.ScalingY', params.ScalingY)
     })
     folderScaling.add(params, 'ScalingZ').name('По оси Z:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, params.ScalingZ, 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.ScalingZ', params.ScalingZ)
     })
 }
 
 const addFolderTurn = () => {
     folderTurn.add(params, 'TurnX').name('Вокруг оси X на угол α:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            1, 0, 0, 0,
+            0, Math.cos(params.TurnX * Math.PI / 180).toFixed(2), Math.sin(params.TurnX * Math.PI / 180).toFixed(2), 0,
+            0, -Math.sin(params.TurnX * Math.PI / 180).toFixed(2), Math.cos(params.TurnX * Math.PI / 180).toFixed(2), 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.TurnX')
     })
     folderTurn.add(params, 'TurnY').name('Вокруг оси Y на угол α:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            Math.cos(params.TurnX * Math.PI / 180).toFixed(2), 0, -Math.sin(params.TurnX * Math.PI / 180).toFixed(2), 0,
+            0, 1, 0, 0,
+            Math.sin(params.TurnX * Math.PI / 180).toFixed(2), 1, Math.cos(params.TurnX * Math.PI / 180).toFixed(2), 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.TrunY')
     })
     folderTurn.add(params, 'TurnZ').name('Вокруг оси Z на угол α:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            Math.cos(params.TurnX * Math.PI / 180).toFixed(2), Math.sin(params.TurnX * Math.PI / 180).toFixed(2), 0, 0,
+            -Math.sin(params.TurnX * Math.PI / 180).toFixed(2), Math.cos(params.TurnX * Math.PI / 180).toFixed(2), 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.TrunZ')
     })
 }
 
 const addFolderObliqueShift = () => {
     folderObliqueShift.add(params, 'obliqueShiftXY').name('Оси X по оси Y с коэффициентом k:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            1, 0, 0, 0,
+            params.obliqueShiftXY, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.obliqueShiftXY', params.obliqueShiftXY)
     })
     folderObliqueShift.add(params, 'obliqueShiftXZ').name('Оси X по оси Z с коэффициентом k:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            params.obliqueShiftXZ, 0, 1, 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.obliqueShiftXZ', params.obliqueShiftXZ)
     })
     folderObliqueShift.add(params, 'obliqueShiftYX').name('Оси Y по оси X с коэффициентом k:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            1, params.obliqueShiftYX, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.obliqueShiftYX', params.obliqueShiftYX)
     })
     folderObliqueShift.add(params, 'obliqueShiftYZ').name('Оси Y по оси Z с коэффициентом k:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, params.obliqueShiftYZ, 1, 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.obliqueShiftYZ', params.obliqueShiftYZ)
     })
     folderObliqueShift.add(params, 'obliqueShiftZX').name('Оси Z по оси X с коэффициентом k:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            1, 0, params.obliqueShiftZX, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.obliqueShiftZX', params.obliqueShiftZX)
     })
     folderObliqueShift.add(params, 'obliqueShiftZY').name('Оси Z по оси Y с коэффициентом k:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            1, 0, 0, 0,
+            0, 1, params.obliqueShiftZY, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        )
+        console.log('params.obliqueShiftZY', params.obliqueShiftZY)
     })
 }
 
 const addFolderOop = () => {
     folderOop.add(params, 'oopX').name('По оси X с фокусным расстоянием fx:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            1, 0, 0, (1/params.oopX),
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        )
+        console.log('1/params.oopX', 1/params.oopX)
     })
     folderOop.add(params, 'oopY').name('По оси Y с фокусным расстоянием fy:').onChange(function () {
-        // console.log(params.interation)
+        matrix.set(
+            1, 0, 0, 0,
+            0, 1, 0, (1/params.oopY),
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        )
+        console.log('1/params.oopY', 1/params.oopY)
     })
     folderOop.add(params, 'oopZ').name('По оси Z с фокусным расстоянием fz:').onChange(function () {
-        console.log(params.oopZ)
+        matrix.set(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, (1/params.oopZ),
+            0, 0, 0, 1,
+        )
+        console.log('1/params.oopZ', 1/params.oopZ)
+    })
+}
+
+const addFolderParallel = () => {
+    folderParallel.add(params, 'ParallelX').name('X:').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderParallel.add(params, 'ParallelY').name('Y:').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderParallel.add(params, 'ParallelZ').name('Z:').onChange(function () {
+        // console.log(params.interation)
     })
 }
 
@@ -106,17 +208,26 @@ const initGuiTable = () => {
     folderTurn = gui.addFolder('Матрица поворота')
     folderObliqueShift = gui.addFolder('Матрица косого сдвига')
     folderOop = gui.addFolder('Матрица ОПП')
+    folderParallel = gui.addFolder('Матрица параллельного переноса на вектор')
 
     setParams()
     addFolderScaling()
     addFolderTurn()
     addFolderObliqueShift()
     addFolderOop()
+    addFolderParallel()
 
-    gui.add(params, 'Parallel').name('Матрица параллельного переноса на вектор ⃗a (x, y, z):').onChange(function () {
-        // console.log(params.interation)
-    })
+    // gui.add(params, 'Parallel').name('Матрица параллельного переноса на вектор ⃗a (x, y, z):').onChange(function () {
+    //     console.log(params.Parallel)
+    // })
 
+    const buttonApply = {
+        add: function () {
+            geometry.applyMatrix4(matrix)
+        }
+    };
+
+    gui.add(buttonApply, 'add').name('Apply');
 }
 
 const calculationOrtoCoef = () => {
@@ -170,7 +281,7 @@ const setupScence = () => {
     calculationOrtoCoef()
 
     cameraOrtho = new THREE.OrthographicCamera(-size_x / 2, size_x / 2,
-    size_y / 2, -size_y / 2, 1, 1000)
+        size_y / 2, -size_y / 2, 1, 1000)
     cameraOrtho.position.set(0, 0, 100)
 
     cameraRig = new THREE.Group()
