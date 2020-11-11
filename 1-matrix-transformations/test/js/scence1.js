@@ -17,7 +17,7 @@ let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats
 let fov_y, depht_s, Z, aspect, size_y, size_x
 //Init geometry
 const geometry = new THREE.Geometry()
-const matrix = new THREE.Matrix4()
+let matrix = new THREE.Matrix4()
 //Init mesh
 const material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true})
 const mesh = new THREE.Mesh(geometry, material);
@@ -76,26 +76,26 @@ const addFolderScaling = () => {
 const addFolderTurn = () => {
     folderTurn.add(params, 'TurnX').name('Вокруг оси X на угол α:').onChange(function () {
         matrix.set(
-            1, 0, 0, 0,
-            0, Math.cos(params.TurnX * Math.PI / 180).toFixed(2), Math.sin(params.TurnX * Math.PI / 180).toFixed(2), 0,
-            0, -Math.sin(params.TurnX * Math.PI / 180).toFixed(2), Math.cos(params.TurnX * Math.PI / 180).toFixed(2), 0,
-            0, 0, 0, 1,
+            1.0, 0.0, 0.0, 0.0,
+            0.0, parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
+            0.0, -parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
+            0.0, 0.0, 0.0, 1.0,
         )
-        console.log('params.TurnX')
+        console.log('params.TurnX', matrix)
     })
     folderTurn.add(params, 'TurnY').name('Вокруг оси Y на угол α:').onChange(function () {
         matrix.set(
-            Math.cos(params.TurnX * Math.PI / 180).toFixed(2), 0, -Math.sin(params.TurnX * Math.PI / 180).toFixed(2), 0,
+            parseFloat(Math.cos(params.TurnY * Math.PI / 180).toFixed(2)), 0, -parseFloat(Math.sin(params.TurnY * Math.PI / 180).toFixed(2)), 0,
             0, 1, 0, 0,
-            Math.sin(params.TurnX * Math.PI / 180).toFixed(2), 1, Math.cos(params.TurnX * Math.PI / 180).toFixed(2), 0,
+            parseFloat(Math.sin(params.TurnY * Math.PI / 180).toFixed(2)), 1, parseFloat(Math.cos(params.TurnY * Math.PI / 180).toFixed(2)), 0,
             0, 0, 0, 1,
         )
         console.log('params.TrunY')
     })
     folderTurn.add(params, 'TurnZ').name('Вокруг оси Z на угол α:').onChange(function () {
         matrix.set(
-            Math.cos(params.TurnX * Math.PI / 180).toFixed(2), Math.sin(params.TurnX * Math.PI / 180).toFixed(2), 0, 0,
-            -Math.sin(params.TurnX * Math.PI / 180).toFixed(2), Math.cos(params.TurnX * Math.PI / 180).toFixed(2), 0, 0,
+            parseFloat(Math.cos(params.TurnZ * Math.PI / 180).toFixed(2)), parseFloat(Math.sin(params.TurnZ * Math.PI / 180).toFixed(2)), 0, 0,
+            -parseFloat(Math.sin(params.TurnZ * Math.PI / 180).toFixed(2)), parseFloat(Math.cos(params.TurnZ * Math.PI / 180).toFixed(2)), 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
@@ -163,30 +163,30 @@ const addFolderObliqueShift = () => {
 const addFolderOop = () => {
     folderOop.add(params, 'oopX').name('По оси X с фокусным расстоянием fx:').onChange(function () {
         matrix.set(
-            1, 0, 0, (1/params.oopX),
+            1, 0, 0, (1 / params.oopX),
             0, 1, 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        console.log('1/params.oopX', 1/params.oopX)
+        console.log('1/params.oopX', 1 / params.oopX)
     })
     folderOop.add(params, 'oopY').name('По оси Y с фокусным расстоянием fy:').onChange(function () {
         matrix.set(
             1, 0, 0, 0,
-            0, 1, 0, (1/params.oopY),
+            0, 1, 0, (1 / params.oopY),
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        console.log('1/params.oopY', 1/params.oopY)
+        console.log('1/params.oopY', 1 / params.oopY)
     })
     folderOop.add(params, 'oopZ').name('По оси Z с фокусным расстоянием fz:').onChange(function () {
         matrix.set(
             1, 0, 0, 0,
             0, 1, 0, 0,
-            0, 0, 1, (1/params.oopZ),
+            0, 0, 1, (1 / params.oopZ),
             0, 0, 0, 1,
         )
-        console.log('1/params.oopZ', 1/params.oopZ)
+        console.log('1/params.oopZ', 1 / params.oopZ)
     })
 }
 
@@ -223,11 +223,26 @@ const initGuiTable = () => {
 
     const buttonApply = {
         add: function () {
+            console.log('buttonApply', matrix)
             geometry.applyMatrix4(matrix)
         }
     };
 
-    gui.add(buttonApply, 'add').name('Apply');
+    const buttonCenter = {
+        add: function () {
+            geometry.center()
+        }
+    }
+
+    const buttonScaling = {
+        add: function () {
+            geometry.scale(0.5, 0.5, 0.5)
+        }
+    }
+
+    gui.add(buttonApply, 'add').name('Apply')
+    gui.add(buttonCenter, 'add').name('Center')
+    gui.add(buttonScaling, 'add').name('Scaling')
 }
 
 const calculationOrtoCoef = () => {
@@ -239,7 +254,7 @@ const calculationOrtoCoef = () => {
     size_x = depht_s * Z * aspect
 }
 
-const addedVectors = (dataScence) => {
+const addedVectors = () => {
     console.log("addedVectors dataScence", dataScence)
     try {
         for (let property in dataScence) {
@@ -290,9 +305,10 @@ const setupScence = () => {
 
     scene.add(cameraRig)
 
-    activeCamera = cameraOrtho
+    activeCamera = cameraPerspective
     //add object
     addedVectors()
+
     cameraRig.add(mesh)
     scene.add(mesh)
 
@@ -332,10 +348,10 @@ const onKeyDown = (event) => {
 }
 
 async function main() {
+    dataScence = await getFile(url)
+
     initGuiTable()
     setupScence()
-    dataScence = await getFile(url)
-    addedVectors(dataScence)
 
     stats = new Stats();
     container.appendChild(stats.dom);
