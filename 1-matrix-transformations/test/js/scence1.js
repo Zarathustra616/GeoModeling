@@ -22,6 +22,9 @@ let matrix = new THREE.Matrix4()
 const material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true})
 const mesh = new THREE.Mesh(geometry, material);
 
+//Init Parallel
+let activeParallel = 0
+
 const setParams = () => params = {
     ParallelX: 0,
     ParallelY: 0,
@@ -192,13 +195,13 @@ const addFolderOop = () => {
 
 const addFolderParallel = () => {
     folderParallel.add(params, 'ParallelX').name('X:').onChange(function () {
-        // console.log(params.interation)
+        activeParallel = 1
     })
     folderParallel.add(params, 'ParallelY').name('Y:').onChange(function () {
-        // console.log(params.interation)
+        activeParallel = 1
     })
     folderParallel.add(params, 'ParallelZ').name('Z:').onChange(function () {
-        // console.log(params.interation)
+        activeParallel = 1
     })
 }
 
@@ -217,12 +220,16 @@ const initGuiTable = () => {
     addFolderOop()
     addFolderParallel()
 
-    // gui.add(params, 'Parallel').name('Матрица параллельного переноса на вектор ⃗a (x, y, z):').onChange(function () {
-    //     console.log(params.Parallel)
-    // })
-
     const buttonApply = {
         add: function () {
+            if (activeParallel === 1) {
+                matrix.set(
+                    1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 1,
+                    params.ParallelX, params.ParallelY, params.ParallelZ, 1,
+                )
+            }
             console.log('buttonApply', matrix)
             geometry.applyMatrix4(matrix)
         }
@@ -234,7 +241,13 @@ const initGuiTable = () => {
         }
     }
 
-    const buttonScaling = {
+    const buttonScalingEnlarge = {
+        add: function () {
+            geometry.scale(1.5, 1.5, 1.5)
+        }
+    }
+
+    const buttonScalingReduce = {
         add: function () {
             geometry.scale(0.5, 0.5, 0.5)
         }
@@ -242,7 +255,8 @@ const initGuiTable = () => {
 
     gui.add(buttonApply, 'add').name('Apply')
     gui.add(buttonCenter, 'add').name('Center')
-    gui.add(buttonScaling, 'add').name('Scaling')
+    gui.add(buttonScalingEnlarge, 'add').name('Scaling Enlarge')
+    gui.add(buttonScalingReduce, 'add').name('Scaling Reduce')
 }
 
 const calculationOrtoCoef = () => {
