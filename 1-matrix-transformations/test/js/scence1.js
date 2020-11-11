@@ -1,17 +1,30 @@
-// init
 import Stats from '../../../libs/stats.module.js';
 import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/OrbitControls.js';
 import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../../libs/three.module.js";
 
-const gui = new dat.GUI({height: 5 * 32 - 1});
+//Init Gui Table
+let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop
+//Init Json
+const url = 'data.json'
+let dataScence = null
+//Init Scence
+let WIDTH, HEIGHT, container, renderer
+const scene = new THREE.Scene()
+//Init camera
+let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats
+//Init OrthographicCamera coef
+let fov_y, depht_s, Z, aspect, size_y, size_x
+//Init geometry
+const geometry = new THREE.Geometry()
+const matrix = new THREE.Matrix4()
 
-const folderScaling = gui.addFolder('Матрица масштабирования')
-const folderTurn = gui.addFolder('Матрица поворота')
-const folderObliqueShift = gui.addFolder('Матрица косого сдвига')
-const folderOop = gui.addFolder('Матрица ОПП')
+const material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true});
+const mesh = new THREE.Mesh(geometry, material);
 
-const params = {
+
+
+const setParams = () => params = {
     Parallel: 0,
     ScalingX: 0,
     ScalingY: 0,
@@ -28,116 +41,153 @@ const params = {
     oopX: 0,
     oopY: 0,
     oopZ: 0
-};
+}
 
-gui.add(params, 'Parallel').name('Матрица параллельного переноса на вектор ⃗a (x, y, z):').onChange(function () {
-    // console.log(params.interation)
-})
+const addFolderScaling = () => {
+    folderScaling.add(params, 'ScalingX').name('По оси X :').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderScaling.add(params, 'ScalingY').name('По оси Y :').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderScaling.add(params, 'ScalingZ').name('По оси Z:').onChange(function () {
+        // console.log(params.interation)
+    })
+}
 
-folderScaling.add(params, 'ScalingX').name('По оси X :').onChange(function () {
-    // console.log(params.interation)
-})
-folderScaling.add(params, 'ScalingY').name('По оси Y :').onChange(function () {
-    // console.log(params.interation)
-})
-folderScaling.add(params, 'ScalingZ').name('По оси Z:').onChange(function () {
-    // console.log(params.interation)
-})
+const addFolderTurn = () => {
+    folderTurn.add(params, 'TurnX').name('Вокруг оси X на угол α:').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderTurn.add(params, 'TurnY').name('Вокруг оси Y на угол α:').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderTurn.add(params, 'TurnZ').name('Вокруг оси Z на угол α:').onChange(function () {
+        // console.log(params.interation)
+    })
+}
 
-folderTurn.add(params, 'TurnX').name('Вокруг оси X на угол α:').onChange(function () {
-    // console.log(params.interation)
-})
-folderTurn.add(params, 'TurnY').name('Вокруг оси Y на угол α:').onChange(function () {
-    // console.log(params.interation)
-})
-folderTurn.add(params, 'TurnZ').name('Вокруг оси Z на угол α:').onChange(function () {
-    // console.log(params.interation)
-})
+const addFolderObliqueShift = () => {
+    folderObliqueShift.add(params, 'obliqueShiftXY').name('Оси X по оси Y с коэффициентом k:').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderObliqueShift.add(params, 'obliqueShiftXZ').name('Оси X по оси Z с коэффициентом k:').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderObliqueShift.add(params, 'obliqueShiftYX').name('Оси Y по оси X с коэффициентом k:').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderObliqueShift.add(params, 'obliqueShiftYZ').name('Оси Y по оси Z с коэффициентом k:').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderObliqueShift.add(params, 'obliqueShiftZX').name('Оси Z по оси X с коэффициентом k:').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderObliqueShift.add(params, 'obliqueShiftZY').name('Оси Z по оси Y с коэффициентом k:').onChange(function () {
+        // console.log(params.interation)
+    })
+}
 
-folderObliqueShift.add(params, 'obliqueShiftXY').name('Оси X по оси Y с коэффициентом k:').onChange(function () {
-    // console.log(params.interation)
-})
-folderObliqueShift.add(params, 'obliqueShiftXZ').name('Оси X по оси Z с коэффициентом k:').onChange(function () {
-    // console.log(params.interation)
-})
-folderObliqueShift.add(params, 'obliqueShiftYX').name('Оси Y по оси X с коэффициентом k:').onChange(function () {
-    // console.log(params.interation)
-})
-folderObliqueShift.add(params, 'obliqueShiftYZ').name('Оси Y по оси Z с коэффициентом k:').onChange(function () {
-    // console.log(params.interation)
-})
-folderObliqueShift.add(params, 'obliqueShiftZX').name('Оси Z по оси X с коэффициентом k:').onChange(function () {
-    // console.log(params.interation)
-})
-folderObliqueShift.add(params, 'obliqueShiftZY').name('Оси Z по оси Y с коэффициентом k:').onChange(function () {
-    // console.log(params.interation)
-})
+const addFolderOop = () => {
+    folderOop.add(params, 'oopX').name('По оси X с фокусным расстоянием fx:').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderOop.add(params, 'oopY').name('По оси Y с фокусным расстоянием fy:').onChange(function () {
+        // console.log(params.interation)
+    })
+    folderOop.add(params, 'oopZ').name('По оси Z с фокусным расстоянием fz:').onChange(function () {
+        console.log(params.oopZ)
+    })
+}
 
-folderOop.add(params, 'oopX').name('По оси X с фокусным расстоянием fx:').onChange(function () {
-    // console.log(params.interation)
-})
-folderOop.add(params, 'oopY').name('По оси Y с фокусным расстоянием fy:').onChange(function () {
-    // console.log(params.interation)
-})
-folderOop.add(params, 'oopZ').name('По оси Z с фокусным расстоянием fz:').onChange(function () {
-    console.log(params.oopZ)
-})
+const initGuiTable = () => {
+    gui = new dat.GUI({height: 5 * 32 - 1});
+    folderScaling = gui.addFolder('Матрица масштабирования')
+    folderTurn = gui.addFolder('Матрица поворота')
+    folderObliqueShift = gui.addFolder('Матрица косого сдвига')
+    folderOop = gui.addFolder('Матрица ОПП')
 
-const url = 'data.json'
-let dataScence = null
+    setParams()
+    addFolderScaling()
+    addFolderTurn()
+    addFolderObliqueShift()
+    addFolderOop()
 
-const WIDTH = window.innerWidth;
-const HEIGHT = window.innerHeight;
+    gui.add(params, 'Parallel').name('Матрица параллельного переноса на вектор ⃗a (x, y, z):').onChange(function () {
+        // console.log(params.interation)
+    })
 
-const container = document.createElement('div')
-document.body.appendChild(container)
+}
 
-const renderer = new THREE.WebGLRenderer({antialias: true})
-renderer.setSize(WIDTH, HEIGHT);
-renderer.setClearColor(0xdfe9c8, 1)
-container.appendChild(renderer.domElement)
+const calculationOrtoCoef = () => {
+    fov_y = 45;
+    depht_s = Math.tan(fov_y / 2.0 * Math.PI / 180.0) * 2.0;
+    Z = 100;
+    aspect = WIDTH / HEIGHT
+    size_y = depht_s * Z
+    size_x = depht_s * Z * aspect
+}
 
-const scene = new THREE.Scene();
+const addedVectors = (dataScence) => {
+    console.log("addedVectors dataScence", dataScence)
+    try {
+        for (let property in dataScence) {
+            if (property === 'points') {
+                for (let numberArray in dataScence[property]) {
+                    let x = dataScence[property][numberArray][0]
+                    let y = dataScence[property][numberArray][1]
+                    let z = dataScence[property][numberArray][2]
+                    geometry.vertices.push(new THREE.Vector3(x, y, z))
+                }
+            } else if (property === 'segments') {
+                let segment1 = dataScence[property][0]
+                let segment2 = dataScence[property][1]
+                let segment3 = dataScence[property][2]
+                geometry.faces.push(new THREE.Face3(segment1, segment2, segment3))
+                geometry.computeBoundingSphere()
+            }
+        }
+    } catch (e) {
+        console.log('addedVectors:', e)
+    }
+}
 
+const setupScence = () => {
+    WIDTH = window.innerWidth
+    HEIGHT = window.innerHeight
 
-const cameraPerspective = new THREE.PerspectiveCamera(45, WIDTH/HEIGHT,1, 1000)
-cameraPerspective.position.set(0,0,100)
+    container = document.createElement('div')
+    document.body.appendChild(container)
 
-var fov_y   = 45;
-var depht_s = Math.tan(fov_y/2.0 * Math.PI/180.0) * 2.0;
-var Z = 100;
-var aspect = WIDTH/HEIGHT;
-var size_y = depht_s * Z;
-var size_x = depht_s * Z * aspect;
+    renderer = new THREE.WebGLRenderer({antialias: true})
+    renderer.setSize(WIDTH, HEIGHT);
+    renderer.setClearColor(0xdfe9c8, 1)
+    container.appendChild(renderer.domElement)
 
+    cameraPerspective = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 1000)
+    cameraPerspective.position.set(0, 0, 100)
 
-const cameraOrtho = new THREE.OrthographicCamera(-size_x/2,  size_x/2,
-    size_y/2, -size_y/2,1, 1000)
-cameraOrtho.position.set(0,0,100)
+    calculationOrtoCoef()
 
+    cameraOrtho = new THREE.OrthographicCamera(-size_x / 2, size_x / 2,
+    size_y / 2, -size_y / 2, 1, 1000)
+    cameraOrtho.position.set(0, 0, 100)
 
+    cameraRig = new THREE.Group()
+    cameraRig.add(cameraPerspective)
+    cameraRig.add(cameraOrtho)
 
-const cameraRig = new THREE.Group();
-cameraRig.add(cameraPerspective);
-cameraRig.add(cameraOrtho);
+    scene.add(cameraRig)
 
-scene.add(cameraRig);
+    activeCamera = cameraOrtho
+    //add object
+    addedVectors()
+    cameraRig.add(mesh)
+    scene.add(mesh)
 
-let activeCamera = cameraOrtho
-
-var boxGeometry = new THREE.BoxGeometry(50, 50, 50);
-var basicMaterial = new THREE.MeshBasicMaterial({color: 0x0095DD, wireframe: true});
-var cube = new THREE.Mesh(boxGeometry, basicMaterial);
-
-
-cameraRig.add(cube)
-scene.add(cube);
-
-const controls = new OrbitControls(activeCamera, renderer.domElement );
-
-controls.update();
-
-let stats
+    controls = new OrbitControls(activeCamera, renderer.domElement)
+    controls.update()
+}
 
 function render() {
     requestAnimationFrame(render);
@@ -156,7 +206,7 @@ async function getFile(url) {
 }
 
 
-function onKeyDown(event) {
+const onKeyDown = (event) => {
     switch (event.keyCode) {
         case 79: /*O*/
             activeCamera = cameraOrtho;
@@ -166,21 +216,20 @@ function onKeyDown(event) {
             activeCamera = cameraPerspective;
             break;
     }
-    const controls = new OrbitControls(activeCamera, renderer.domElement );
+    const controls = new OrbitControls(activeCamera, renderer.domElement);
     controls.update();
 }
 
 async function main() {
-
+    initGuiTable()
+    setupScence()
     dataScence = await getFile(url)
-    // addedVectors(dataScence)
+    addedVectors(dataScence)
 
     stats = new Stats();
     container.appendChild(stats.dom);
-    // window.addEventListener('resize', onWindowResize, false)
     document.addEventListener('keydown', onKeyDown, false)
     render();
-    animate();
 }
 
 main()
