@@ -224,10 +224,10 @@ const initGuiTable = () => {
         add: function () {
             if (activeParallel === 1) {
                 matrix.set(
-                    1, 0, 0, 0,
-                    0, 1, 0, 0,
-                    0, 0, 1, 0,
-                    params.ParallelX, params.ParallelY, params.ParallelZ, 1,
+                    1, 0, 0, params.ParallelX,
+                    0, 1, 0, params.ParallelY,
+                    0, 0, 1, params.ParallelZ,
+                    0, 0, 0, 1,
                 )
             }
             console.log('buttonApply', matrix)
