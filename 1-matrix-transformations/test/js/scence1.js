@@ -88,9 +88,9 @@ const addFolderTurn = () => {
     })
     folderTurn.add(params, 'TurnY').name('Вокруг оси Y на угол α:').onChange(function () {
         matrix.set(
-            parseFloat(Math.cos(params.TurnY * Math.PI / 180).toFixed(2)), 0, -parseFloat(Math.sin(params.TurnY * Math.PI / 180).toFixed(2)), 0,
+            parseFloat(Math.cos(params.TurnY * Math.PI / 180).toFixed(2)), 0, parseFloat(Math.sin(params.TurnY * Math.PI / 180).toFixed(2)), 0,
             0, 1, 0, 0,
-            parseFloat(Math.sin(params.TurnY * Math.PI / 180).toFixed(2)), 1, parseFloat(Math.cos(params.TurnY * Math.PI / 180).toFixed(2)), 0,
+            -parseFloat(Math.sin(params.TurnY * Math.PI / 180).toFixed(2)), 0, parseFloat(Math.cos(params.TurnY * Math.PI / 180).toFixed(2)), 0,
             0, 0, 0, 1,
         )
         console.log('params.TrunY')
