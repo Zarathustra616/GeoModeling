@@ -274,16 +274,16 @@ const addedVectors = () => {
         for (let property in dataScence) {
             if (property === 'points') {
                 for (let numberArray in dataScence[property]) {
+                    // console.log(dataScence[property][numberArray])
                     let x = dataScence[property][numberArray][0]
                     let y = dataScence[property][numberArray][1]
                     let z = dataScence[property][numberArray][2]
                     geometry.vertices.push(new THREE.Vector3(x, y, z))
                 }
             } else if (property === 'segments') {
-                let segment1 = dataScence[property][0]
-                let segment2 = dataScence[property][1]
-                let segment3 = dataScence[property][2]
-                geometry.faces.push(new THREE.Face3(segment1, segment2, segment3))
+                for (let numberSegment in dataScence[property]) {
+                    geometry.faces.push(new THREE.Face3(dataScence[property][numberSegment][0], dataScence[property][numberSegment][1], dataScence[property][numberSegment][2]))
+                }
                 geometry.computeBoundingSphere()
             }
         }
@@ -322,6 +322,11 @@ const setupScence = () => {
     activeCamera = cameraPerspective
     //add object
     addedVectors()
+    // const boxGeometry = new THREE.BoxGeometry(50, 50, 50);
+    // const basicMaterial = new THREE.MeshBasicMaterial({color: 0x0095DD, wireframe: true});
+    // const cube = new THREE.Mesh(boxGeometry, basicMaterial);
+    // console.log(cube.geometry)
+
 
     cameraRig.add(mesh)
     scene.add(mesh)
