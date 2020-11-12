@@ -43,7 +43,7 @@ const setParams = () => params = {
     obliqueShiftZY: 0,
     oopX: 0,
     oopY: 0,
-    oopZ: 0
+    oopZ: 100
 }
 
 const addFolderScaling = () => {
@@ -166,30 +166,30 @@ const addFolderObliqueShift = () => {
 const addFolderOop = () => {
     folderOop.add(params, 'oopX').name('По оси X с фокусным расстоянием fx:').onChange(function () {
         matrix.set(
-            1, 0, 0, (1 / params.oopX),
+            1, 0, 0, ( 1/params.oopX),
             0, 1, 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        console.log('1/params.oopX', 1 / params.oopX)
+        console.log('params.oopX',  params.oopX)
     })
     folderOop.add(params, 'oopY').name('По оси Y с фокусным расстоянием fy:').onChange(function () {
         matrix.set(
             1, 0, 0, 0,
-            0, 1, 0, (1 / params.oopY),
+            0, 1, 0, (1/params.oopY),
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        console.log('1/params.oopY', 1 / params.oopY)
+        console.log('params.oopY', params.oopY)
     })
     folderOop.add(params, 'oopZ').name('По оси Z с фокусным расстоянием fz:').onChange(function () {
         matrix.set(
             1, 0, 0, 0,
             0, 1, 0, 0,
-            0, 0, 1, (1 / params.oopZ),
+            0, 0, 1, ( 1/params.oopZ),
             0, 0, 0, 1,
         )
-        console.log('1/params.oopZ', 1 / params.oopZ)
+        console.log('params.oopZ',  params.oopZ)
     })
 }
 
@@ -306,7 +306,7 @@ const setupScence = () => {
     container.appendChild(renderer.domElement)
 
     cameraPerspective = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 1000)
-    cameraPerspective.position.set(0, 0, 100)
+    cameraPerspective.position.set(params.oopX, params.oopY, params.oopZ)
 
     calculationOrtoCoef()
 
@@ -320,7 +320,7 @@ const setupScence = () => {
 
     scene.add(cameraRig)
 
-    activeCamera = cameraPerspective
+    activeCamera = cameraOrtho
     //add object
     addedVectors()
     // const boxGeometry = new THREE.BoxGeometry(50, 50, 50);
