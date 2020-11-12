@@ -6,7 +6,7 @@ import * as THREE from "../../../libs/three.module.js";
 //Init Gui Table
 let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel
 //Init Json
-const url = 'data.json'
+const url = 'cube.json'
 let dataScence = null
 //Init Scence
 let WIDTH, HEIGHT, container, renderer
@@ -226,7 +226,7 @@ const initGuiTable = () => {
                 matrix.set(
                     1, 0, 0, 0,
                     0, 1, 0, 0,
-                    0, 0, 1, 1,
+                    0, 0, 1, 0,
                     params.ParallelX, params.ParallelY, params.ParallelZ, 1,
                 )
             }
@@ -278,7 +278,8 @@ const addedVectors = () => {
                     let x = dataScence[property][numberArray][0]
                     let y = dataScence[property][numberArray][1]
                     let z = dataScence[property][numberArray][2]
-                    geometry.vertices.push(new THREE.Vector3(x, y, z))
+                    let h = dataScence[property][numberArray][3]
+                    geometry.vertices.push(new THREE.Vector4(x, y, z, h))
                 }
             } else if (property === 'segments') {
                 for (let numberSegment in dataScence[property]) {
