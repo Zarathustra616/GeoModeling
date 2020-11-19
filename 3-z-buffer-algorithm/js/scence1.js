@@ -47,7 +47,7 @@ const setParams = () => params = {
 }
 
 const addFolderScaling = () => {
-    folderScaling.add(params, 'ScalingX').name('По оси X :').onChange(function () {
+    folderScaling.add(params, 'ScalingX').name('По оси X :').onFinishChange(function () {
         matrix.set(
             params.ScalingX, 0, 0, 0,
             0, 1, 0, 0,
@@ -56,7 +56,7 @@ const addFolderScaling = () => {
         )
         console.log('params.ScalingX', params.ScalingX)
     })
-    folderScaling.add(params, 'ScalingY').name('По оси Y :').onChange(function () {
+    folderScaling.add(params, 'ScalingY').name('По оси Y :').onFinishChange(function () {
         matrix.set(
             1, 0, 0, 0,
             0, params.ScalingY, 0, 0,
@@ -65,7 +65,7 @@ const addFolderScaling = () => {
         )
         console.log('params.ScalingY', params.ScalingY)
     })
-    folderScaling.add(params, 'ScalingZ').name('По оси Z:').onChange(function () {
+    folderScaling.add(params, 'ScalingZ').name('По оси Z:').onFinishChange(function () {
         matrix.set(
             1, 0, 0, 0,
             0, 1, 0, 0,
@@ -77,7 +77,7 @@ const addFolderScaling = () => {
 }
 
 const addFolderTurn = () => {
-    folderTurn.add(params, 'TurnX').name('Вокруг оси X на угол α:').onChange(function () {
+    folderTurn.add(params, 'TurnX').name('Вокруг оси X на угол α:').onFinishChange(function () {
         matrix.set(
             1.0, 0.0, 0.0, 0.0,
             0.0, parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
@@ -86,7 +86,7 @@ const addFolderTurn = () => {
         )
         console.log('params.TurnX', matrix)
     })
-    folderTurn.add(params, 'TurnY').name('Вокруг оси Y на угол α:').onChange(function () {
+    folderTurn.add(params, 'TurnY').name('Вокруг оси Y на угол α:').onFinishChange(function () {
         matrix.set(
             parseFloat(Math.cos(params.TurnY * Math.PI / 180).toFixed(2)), 0, parseFloat(Math.sin(params.TurnY * Math.PI / 180).toFixed(2)), 0,
             0, 1, 0, 0,
@@ -95,7 +95,7 @@ const addFolderTurn = () => {
         )
         console.log('params.TrunY')
     })
-    folderTurn.add(params, 'TurnZ').name('Вокруг оси Z на угол α:').onChange(function () {
+    folderTurn.add(params, 'TurnZ').name('Вокруг оси Z на угол α:').onFinishChange(function () {
         matrix.set(
             parseFloat(Math.cos(params.TurnZ * Math.PI / 180).toFixed(2)), parseFloat(Math.sin(params.TurnZ * Math.PI / 180).toFixed(2)), 0, 0,
             -parseFloat(Math.sin(params.TurnZ * Math.PI / 180).toFixed(2)), parseFloat(Math.cos(params.TurnZ * Math.PI / 180).toFixed(2)), 0, 0,
@@ -107,7 +107,7 @@ const addFolderTurn = () => {
 }
 
 const addFolderObliqueShift = () => {
-    folderObliqueShift.add(params, 'obliqueShiftXY').name('Оси X по оси Y с коэффициентом k:').onChange(function () {
+    folderObliqueShift.add(params, 'obliqueShiftXY').name('Оси X по оси Y с коэффициентом k:').onFinishChange(function () {
         matrix.set(
             1, 0, 0, 0,
             params.obliqueShiftXY, 1, 0, 0,
@@ -116,7 +116,7 @@ const addFolderObliqueShift = () => {
         )
         console.log('params.obliqueShiftXY', params.obliqueShiftXY)
     })
-    folderObliqueShift.add(params, 'obliqueShiftXZ').name('Оси X по оси Z с коэффициентом k:').onChange(function () {
+    folderObliqueShift.add(params, 'obliqueShiftXZ').name('Оси X по оси Z с коэффициентом k:').onFinishChange(function () {
         matrix.set(
             1, 0, 0, 0,
             0, 1, 0, 0,
@@ -125,7 +125,7 @@ const addFolderObliqueShift = () => {
         )
         console.log('params.obliqueShiftXZ', params.obliqueShiftXZ)
     })
-    folderObliqueShift.add(params, 'obliqueShiftYX').name('Оси Y по оси X с коэффициентом k:').onChange(function () {
+    folderObliqueShift.add(params, 'obliqueShiftYX').name('Оси Y по оси X с коэффициентом k:').onFinishChange(function () {
         matrix.set(
             1, params.obliqueShiftYX, 0, 0,
             0, 1, 0, 0,
@@ -134,7 +134,7 @@ const addFolderObliqueShift = () => {
         )
         console.log('params.obliqueShiftYX', params.obliqueShiftYX)
     })
-    folderObliqueShift.add(params, 'obliqueShiftYZ').name('Оси Y по оси Z с коэффициентом k:').onChange(function () {
+    folderObliqueShift.add(params, 'obliqueShiftYZ').name('Оси Y по оси Z с коэффициентом k:').onFinishChange(function () {
         matrix.set(
             1, 0, 0, 0,
             0, 1, 0, 0,
@@ -143,7 +143,7 @@ const addFolderObliqueShift = () => {
         )
         console.log('params.obliqueShiftYZ', params.obliqueShiftYZ)
     })
-    folderObliqueShift.add(params, 'obliqueShiftZX').name('Оси Z по оси X с коэффициентом k:').onChange(function () {
+    folderObliqueShift.add(params, 'obliqueShiftZX').name('Оси Z по оси X с коэффициентом k:').onFinishChange(function () {
         matrix.set(
             1, 0, params.obliqueShiftZX, 0,
             0, 1, 0, 0,
@@ -152,7 +152,7 @@ const addFolderObliqueShift = () => {
         )
         console.log('params.obliqueShiftZX', params.obliqueShiftZX)
     })
-    folderObliqueShift.add(params, 'obliqueShiftZY').name('Оси Z по оси Y с коэффициентом k:').onChange(function () {
+    folderObliqueShift.add(params, 'obliqueShiftZY').name('Оси Z по оси Y с коэффициентом k:').onFinishChange(function () {
         matrix.set(
             1, 0, 0, 0,
             0, 1, params.obliqueShiftZY, 0,
@@ -164,7 +164,7 @@ const addFolderObliqueShift = () => {
 }
 
 const addFolderOop = () => {
-    folderOop.add(params, 'oopX').name('По оси X с фокусным расстоянием fx:').onChange(function () {
+    folderOop.add(params, 'oopX').name('По оси X с фокусным расстоянием fx:').onFinishChange(function () {
         matrix.set(
             1, 0, 0, (1 / params.oopX),
             0, 1, 0, 0,
@@ -173,7 +173,7 @@ const addFolderOop = () => {
         )
         console.log('1/params.oopX', 1 / params.oopX)
     })
-    folderOop.add(params, 'oopY').name('По оси Y с фокусным расстоянием fy:').onChange(function () {
+    folderOop.add(params, 'oopY').name('По оси Y с фокусным расстоянием fy:').onFinishChange(function () {
         matrix.set(
             1, 0, 0, 0,
             0, 1, 0, (1 / params.oopY),
@@ -182,7 +182,7 @@ const addFolderOop = () => {
         )
         console.log('1/params.oopY', 1 / params.oopY)
     })
-    folderOop.add(params, 'oopZ').name('По оси Z с фокусным расстоянием fz:').onChange(function () {
+    folderOop.add(params, 'oopZ').name('По оси Z с фокусным расстоянием fz:').onFinishChange(function () {
         matrix.set(
             1, 0, 0, 0,
             0, 1, 0, 0,
@@ -194,13 +194,13 @@ const addFolderOop = () => {
 }
 
 const addFolderParallel = () => {
-    folderParallel.add(params, 'ParallelX').name('X:').onChange(function () {
+    folderParallel.add(params, 'ParallelX').name('X:').onFinishChange(function () {
         activeParallel = 1
     })
-    folderParallel.add(params, 'ParallelY').name('Y:').onChange(function () {
+    folderParallel.add(params, 'ParallelY').name('Y:').onFinishChange(function () {
         activeParallel = 1
     })
-    folderParallel.add(params, 'ParallelZ').name('Z:').onChange(function () {
+    folderParallel.add(params, 'ParallelZ').name('Z:').onFinishChange(function () {
         activeParallel = 1
     })
 }
