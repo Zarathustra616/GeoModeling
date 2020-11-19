@@ -16,29 +16,10 @@ let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats
 //Init OrthographicCamera coef
 let fov_y, depht_s, Z, aspect, size_y, size_x
 //Init geometry
-const base = new THREE.Object3D();
-const size = 6;
-const side = THREE.DoubleSide
-const geometry = new THREE.PlaneBufferGeometry(size, size);
-[
-    {position: [-1, 0, 0], up: [0, 1, 0],},
-    {position: [1, 0, 0], up: [0, -1, 0],},
-    {position: [0, -1, 0], up: [0, 0, -1],},
-    {position: [0, 1, 0], up: [0, 0, 1],},
-    {position: [0, 0, -1], up: [1, 0, 0],},
-    {position: [0, 0, 1], up: [-1, 0, 0],},
-].forEach((settings, ndx) => {
-    const material = new THREE.MeshBasicMaterial({side});
-    material.color.setHSL(ndx / 6, .5, .5);
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.up.set(...settings.up);
-    mesh.lookAt(...settings.position);
-    mesh.position.set(...settings.position).multiplyScalar(size * .75);
-    base.add(mesh);
-});
-let matrix = new THREE.Matrix4()
-//Init mesh
+let size, side, geometry, material, mesh
+const base = new THREE.Object3D()
 
+let matrix = new THREE.Matrix4()
 //Init Parallel
 let activeParallel = 0
 
@@ -255,19 +236,20 @@ const initGuiTable = () => {
 
     const buttonCenter = {
         add: function () {
-            geometry.center()
+            base.center()
         }
     }
 
     const buttonScalingEnlarge = {
         add: function () {
-            geometry.scale(1.5, 1.5, 1.5)
+            base.scale(1.5, 1.5, 1.5)
         }
     }
 
     const buttonScalingReduce = {
         add: function () {
-            geometry.scale(0.5, 0.5, 0.5)
+            console.log(base)
+            base.scale(0.5, 0.5, 0.5)
         }
     }
 
@@ -290,6 +272,26 @@ const calculationOrtoCoef = () => {
 
 const addedVectors = () => {
     /* Да это жестко. */
+    console.log('ADD')
+    size = 6
+    side = THREE.DoubleSide
+    geometry = new THREE.PlaneBufferGeometry(size, size);
+    [
+        {position: [-1, 0, 0], up: [0, 1, 0],},
+        {position: [1, 0, 0], up: [0, -1, 0],},
+        {position: [0, -1, 0], up: [0, 0, -1],},
+        {position: [0, 1, 0], up: [0, 0, 1],},
+        {position: [0, 0, -1], up: [1, 0, 0],},
+        {position: [0, 0, 1], up: [-1, 0, 0],},
+    ].forEach((settings, ndx) => {
+        material = new THREE.MeshBasicMaterial({side});
+        material.color.setHSL(ndx / 6, .5, .5);
+        mesh = new THREE.Mesh(geometry, material);
+        mesh.up.set(...settings.up);
+        mesh.lookAt(...settings.position);
+        mesh.position.set(...settings.position).multiplyScalar(size * .75)
+        base.add(mesh)
+    })
     scene.add(base)
 }
 

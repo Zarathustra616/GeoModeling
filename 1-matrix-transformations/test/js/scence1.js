@@ -1,10 +1,10 @@
 import Stats from '../../../libs/stats.module.js';
-import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/OrbitControls.js';
+import {OrbitControls} from '../../../libs/OrbitControls.js';
 import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../../libs/three.module.js";
 
 //Init Gui Table
-let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel, ScalingM
+let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel, folderScalingCoef
 //Init Json
 const url = 'cube.json'
 let dataScence = null
@@ -44,7 +44,7 @@ const setParams = () => params = {
     oopX: 0,
     oopY: 0,
     oopZ: 0,
-    Scaling:1
+    ScalingCoef: 1,
 }
 
 const addFolderScaling = () => {
@@ -206,9 +206,15 @@ const addFolderParallel = () => {
     })
 }
 
-const buttonScalingEnlarge  = () => {
-    ScalingM.add(params, 'Scaling').name('Масштаб:').onFinishChange(function () {
-        geometry.scale(params.Scaling, params.Scaling, params.Scaling)
+const addFolderScalingCoef  = () => {
+    folderScalingCoef.add(params, 'ScalingCoef').name('Масштаб:').onFinishChange(function () {
+        console.log('addScalingCoef :', )
+        matrix.set(
+            params.ScalingCoef, 0, 0, 0,
+            0, params.ScalingCoef, 0, 0,
+            0, 0, params.ScalingCoef, 0,
+            0, 0, 0, 1,
+        )
     })
 
 }
@@ -220,7 +226,7 @@ const initGuiTable = () => {
     folderObliqueShift = gui.addFolder('Матрица косого сдвига')
     folderOop = gui.addFolder('Матрица ОПП')
     folderParallel = gui.addFolder('Матрица параллельного переноса на вектор')
-    ScalingM = gui.addFolder('Коэффициент масштабирования')
+    folderScalingCoef = gui.addFolder('Коэффициент масштабирования')
 
     setParams()
     addFolderScaling()
@@ -228,7 +234,7 @@ const initGuiTable = () => {
     addFolderObliqueShift()
     addFolderOop()
     addFolderParallel()
-    buttonScalingEnlarge()
+    addFolderScalingCoef()
 
     const buttonApply = {
         add: function () {
@@ -239,6 +245,7 @@ const initGuiTable = () => {
                     0, 1, 0, params.ParallelY,
                     0, 0, 1, params.ParallelZ,
                     0, 0, 0, 1,
+                    activeParallel = 0
                 )
             }
             console.log('buttonApply', matrix)
