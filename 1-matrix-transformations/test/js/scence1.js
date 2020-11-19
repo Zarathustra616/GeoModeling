@@ -167,17 +167,17 @@ const addFolderObliqueShift = () => {
 const addFolderOop = () => {
     folderOop.add(params, 'oopX').name('По оси X с фокусным расстоянием fx:').onFinishChange(function () {
         matrix.set(
-            1, 0, 0, ( 1/params.oopX),
+            1, 0, 0, (1 / params.oopX),
             0, 1, 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        console.log('params.oopX',  params.oopX)
+        console.log('params.oopX', params.oopX)
     })
     folderOop.add(params, 'oopY').name('По оси Y с фокусным расстоянием fy:').onFinishChange(function () {
         matrix.set(
             1, 0, 0, 0,
-            0, 1, 0, (1/params.oopY),
+            0, 1, 0, (1 / params.oopY),
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
@@ -187,10 +187,10 @@ const addFolderOop = () => {
         matrix.set(
             1, 0, 0, 0,
             0, 1, 0, 0,
-            0, 0, 1, ( 1/params.oopZ),
+            0, 0, 1, (1 / params.oopZ),
             0, 0, 0, 1,
         )
-        console.log('params.oopZ',  params.oopZ)
+        console.log('params.oopZ', params.oopZ)
     })
 }
 
@@ -206,9 +206,8 @@ const addFolderParallel = () => {
     })
 }
 
-const addFolderScalingCoef  = () => {
+const addFolderScalingCoef = () => {
     folderScalingCoef.add(params, 'ScalingCoef').name('Масштаб:').onFinishChange(function () {
-        console.log('addScalingCoef :', )
         matrix.set(
             params.ScalingCoef, 0, 0, 0,
             0, params.ScalingCoef, 0, 0,
@@ -216,7 +215,6 @@ const addFolderScalingCoef  = () => {
             0, 0, 0, 1,
         )
     })
-
 }
 
 const initGuiTable = () => {

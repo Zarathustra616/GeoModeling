@@ -2,9 +2,10 @@ import Stats from '../../libs/stats.module.js';
 import {OrbitControls} from '../../libs/OrbitControls.js';
 import dat from '../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../libs/three.module.js";
+import {Vector3} from "../../libs/three.module.js";
 
 //Init Gui Table
-let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel
+let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel, folderScalingCoef
 //Init Json
 const url = 'cube.json'
 let dataScence = null
@@ -41,7 +42,8 @@ const setParams = () => params = {
     obliqueShiftZY: 0,
     oopX: 0,
     oopY: 0,
-    oopZ: 0
+    oopZ: 0,
+    ScalingCoef: 1,
 }
 
 const addFolderScaling = () => {
@@ -203,6 +205,17 @@ const addFolderParallel = () => {
     })
 }
 
+const addFolderScalingCoef = () => {
+    folderScalingCoef.add(params, 'ScalingCoef').name('Маштаб: ').onFinishChange(function () {
+        matrix.set(
+            params.ScalingCoef, 0, 0, 0,
+            0, params.ScalingCoef, 0, 0,
+            0, 0, params.ScalingCoef, 0,
+            0, 0, 0, 1,
+        )
+    })
+}
+
 const initGuiTable = () => {
     gui = new dat.GUI({height: 5 * 32 - 1});
     folderScaling = gui.addFolder('Матрица масштабирования')
@@ -210,6 +223,7 @@ const initGuiTable = () => {
     folderObliqueShift = gui.addFolder('Матрица косого сдвига')
     folderOop = gui.addFolder('Матрица ОПП')
     folderParallel = gui.addFolder('Матрица параллельного переноса на вектор')
+    folderScalingCoef = gui.addFolder('Коэффициент масштабирования')
 
     setParams()
     addFolderScaling()
@@ -217,6 +231,7 @@ const initGuiTable = () => {
     addFolderObliqueShift()
     addFolderOop()
     addFolderParallel()
+    addFolderScalingCoef()
 
     const buttonApply = {
         add: function () {
@@ -240,25 +255,8 @@ const initGuiTable = () => {
         }
     }
 
-    const buttonScalingEnlarge = {
-        add: function () {
-            base.scale(1.5, 1.5, 1.5)
-        }
-    }
-
-    const buttonScalingReduce = {
-        add: function () {
-            console.log(base)
-            base.scale(0.5, 0.5, 0.5)
-        }
-    }
-
-
     gui.add(buttonApply, 'add').name('Apply')
     gui.add(buttonCenter, 'add').name('Center')
-    gui.add(buttonScalingEnlarge, 'add').name('Scaling Enlarge')
-    gui.add(buttonScalingReduce, 'add').name('Scaling Reduce')
-
 }
 
 const calculationOrtoCoef = () => {
