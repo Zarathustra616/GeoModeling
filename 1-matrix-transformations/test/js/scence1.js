@@ -1,5 +1,5 @@
 import Stats from '../../../libs/stats.module.js';
-import {OrbitControls} from 'https://threejsfundamentals.org/threejs/js/threejs/r122/examples/jsm/controls/OrbitControls.js';
+import {OrbitControls} from '../../../libs/OrbitControls.js';
 import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../../libs/three.module.js";
 

@@ -19,7 +19,7 @@ let fov_y, depht_s, Z, aspect, size_y, size_x
 const geometry = new THREE.Geometry()
 let matrix = new THREE.Matrix4()
 //Init mesh
-const material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true})
+const material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: false})
 const mesh = new THREE.Mesh(geometry, material)
 
 //Init Parallel
