@@ -16,11 +16,28 @@ let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats
 //Init OrthographicCamera coef
 let fov_y, depht_s, Z, aspect, size_y, size_x
 //Init geometry
-const geometry = new THREE.Geometry()
+const base = new THREE.Object3D();
+const size = 6;
+const side = THREE.DoubleSide
+const geometry = new THREE.PlaneBufferGeometry(size, size);
+[
+    {position: [-1, 0, 0], up: [0, 1, 0],},
+    {position: [1, 0, 0], up: [0, -1, 0],},
+    {position: [0, -1, 0], up: [0, 0, -1],},
+    {position: [0, 1, 0], up: [0, 0, 1],},
+    {position: [0, 0, -1], up: [1, 0, 0],},
+    {position: [0, 0, 1], up: [-1, 0, 0],},
+].forEach((settings, ndx) => {
+    const material = new THREE.MeshBasicMaterial({side});
+    material.color.setHSL(ndx / 6, .5, .5);
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.up.set(...settings.up);
+    mesh.lookAt(...settings.position);
+    mesh.position.set(...settings.position).multiplyScalar(size * .75);
+    base.add(mesh);
+});
 let matrix = new THREE.Matrix4()
 //Init mesh
-const material = new THREE.MeshBasicMaterial({color: 0xff0000,side: THREE.FrontSide, wireframe: false})
-const mesh = new THREE.Mesh(geometry, material)
 
 //Init Parallel
 let activeParallel = 0
@@ -232,7 +249,7 @@ const initGuiTable = () => {
                 activeParallel = 0
             }
             console.log('buttonApply', matrix)
-            geometry.applyMatrix4(matrix)
+            base.applyMatrix4(matrix)
         }
     };
 
@@ -270,28 +287,8 @@ const calculationOrtoCoef = () => {
 }
 
 const addedVectors = () => {
-    console.log("addedVectors dataScence", dataScence)
-    try {
-        for (let property in dataScence) {
-            if (property === 'points') {
-                for (let numberArray in dataScence[property]) {
-                    // console.log(dataScence[property][numberArray])
-                    let x = dataScence[property][numberArray][0]
-                    let y = dataScence[property][numberArray][1]
-                    let z = dataScence[property][numberArray][2]
-                    let h = dataScence[property][numberArray][3]
-                    geometry.vertices.push(new THREE.Vector4(x, y, z, h))
-                }
-            } else if (property === 'segments') {
-                for (let numberSegment in dataScence[property]) {
-                    geometry.faces.push(new THREE.Face3(dataScence[property][numberSegment][0], dataScence[property][numberSegment][1], dataScence[property][numberSegment][2]))
-                }
-                geometry.computeBoundingSphere()
-            }
-        }
-    } catch (e) {
-        console.log('addedVectors:', e)
-    }
+    /* Да это жестко. */
+    scene.add(base)
 }
 
 const setupScence = () => {
@@ -324,14 +321,10 @@ const setupScence = () => {
     activeCamera = cameraPerspective
     //add object
     addedVectors()
-    // const boxGeometry = new THREE.BoxGeometry(50, 50, 50);
-    // const basicMaterial = new THREE.MeshBasicMaterial({color: 0x0095DD, wireframe: true});
-    // const cube = new THREE.Mesh(boxGeometry, basicMaterial);
-    // console.log(cube.geometry)
 
+    // cameraRig.add(mesh)
+    // scene.add(mesh)
 
-    cameraRig.add(mesh)
-    scene.add(mesh)
 
     controls = new OrbitControls(activeCamera, renderer.domElement)
     controls.update()
