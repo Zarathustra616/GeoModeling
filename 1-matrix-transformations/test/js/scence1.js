@@ -1,10 +1,10 @@
 import Stats from '../../../libs/stats.module.js';
-import {OrbitControls} from '../../../libs/OrbitControls.js';
+import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/OrbitControls.js';
 import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../../libs/three.module.js";
 
 //Init Gui Table
-let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel
+let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel, ScalingM
 //Init Json
 const url = 'cube.json'
 let dataScence = null
@@ -43,7 +43,8 @@ const setParams = () => params = {
     obliqueShiftZY: 0,
     oopX: 0,
     oopY: 0,
-    oopZ: 100
+    oopZ: 0,
+    Scaling:1
 }
 
 const addFolderScaling = () => {
@@ -205,6 +206,13 @@ const addFolderParallel = () => {
     })
 }
 
+const buttonScalingEnlarge  = () => {
+    ScalingM.add(params, 'Scaling').name('Масштаб:').onFinishChange(function () {
+        geometry.scale(params.Scaling, params.Scaling, params.Scaling)
+    })
+
+}
+
 const initGuiTable = () => {
     gui = new dat.GUI({height: 5 * 32 - 1});
     folderScaling = gui.addFolder('Матрица масштабирования')
@@ -212,6 +220,7 @@ const initGuiTable = () => {
     folderObliqueShift = gui.addFolder('Матрица косого сдвига')
     folderOop = gui.addFolder('Матрица ОПП')
     folderParallel = gui.addFolder('Матрица параллельного переноса на вектор')
+    ScalingM = gui.addFolder('Коэффициент масштабирования')
 
     setParams()
     addFolderScaling()
@@ -219,6 +228,7 @@ const initGuiTable = () => {
     addFolderObliqueShift()
     addFolderOop()
     addFolderParallel()
+    buttonScalingEnlarge()
 
     const buttonApply = {
         add: function () {
@@ -230,11 +240,9 @@ const initGuiTable = () => {
                     0, 0, 1, params.ParallelZ,
                     0, 0, 0, 1,
                 )
-                activeParallel = 0
             }
             console.log('buttonApply', matrix)
             geometry.applyMatrix4(matrix)
-            activeParallel = 0
         }
     };
 
@@ -246,22 +254,8 @@ const initGuiTable = () => {
         }
     }
 
-    const buttonScalingEnlarge = {
-        add: function () {
-            geometry.scale(1.5, 1.5, 1.5)
-        }
-    }
-
-    const buttonScalingReduce = {
-        add: function () {
-            geometry.scale(0.5, 0.5, 0.5)
-        }
-    }
-
     gui.add(buttonApply, 'add').name('Apply')
     gui.add(buttonCenter, 'add').name('Center')
-    gui.add(buttonScalingEnlarge, 'add').name('Scaling Enlarge')
-    gui.add(buttonScalingReduce, 'add').name('Scaling Reduce')
 }
 
 const calculationOrtoCoef = () => {
@@ -324,7 +318,7 @@ const setupScence = () => {
     cameraRig.add(cameraOrtho)
 
     scene.add(cameraRig)
-    console.log(scene.clone())
+
     activeCamera = cameraOrtho
     //add object
     addedVectors()

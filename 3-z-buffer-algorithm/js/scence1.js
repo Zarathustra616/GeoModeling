@@ -271,10 +271,12 @@ const initGuiTable = () => {
         }
     }
 
+
     gui.add(buttonApply, 'add').name('Apply')
     gui.add(buttonCenter, 'add').name('Center')
     gui.add(buttonScalingEnlarge, 'add').name('Scaling Enlarge')
     gui.add(buttonScalingReduce, 'add').name('Scaling Reduce')
+
 }
 
 const calculationOrtoCoef = () => {
