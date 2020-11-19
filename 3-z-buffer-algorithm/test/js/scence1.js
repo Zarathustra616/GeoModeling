@@ -1,7 +1,7 @@
 import Stats from '../../../libs/stats.module.js';
-import {OrbitControls} from 'https://threejsfundamentals.org/threejs/js/threejs/r122/examples/jsm/controls/OrbitControls.js';
 import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../../libs/three.module.js";
+
 
 //Init Gui Table
 let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel
@@ -20,7 +20,7 @@ const geometry = new THREE.Geometry()
 let matrix = new THREE.Matrix4()
 //Init mesh
 const material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true})
-const mesh = new THREE.Mesh(geometry, material);
+const mesh = new THREE.Mesh(geometry, material)
 
 //Init Parallel
 let activeParallel = 0
@@ -43,7 +43,7 @@ const setParams = () => params = {
     obliqueShiftZY: 0,
     oopX: 0,
     oopY: 0,
-    oopZ: 100
+    oopZ: 0
 }
 
 const addFolderScaling = () => {
@@ -54,7 +54,6 @@ const addFolderScaling = () => {
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
         console.log('params.ScalingX', params.ScalingX)
     })
     folderScaling.add(params, 'ScalingY').name('По оси Y :').onChange(function () {
@@ -64,7 +63,6 @@ const addFolderScaling = () => {
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
         console.log('params.ScalingY', params.ScalingY)
     })
     folderScaling.add(params, 'ScalingZ').name('По оси Z:').onChange(function () {
@@ -74,7 +72,6 @@ const addFolderScaling = () => {
             0, 0, params.ScalingZ, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
         console.log('params.ScalingZ', params.ScalingZ)
     })
 }
@@ -87,7 +84,6 @@ const addFolderTurn = () => {
             0.0, -parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
             0.0, 0.0, 0.0, 1.0,
         )
-        activeParallel = 0
         console.log('params.TurnX', matrix)
     })
     folderTurn.add(params, 'TurnY').name('Вокруг оси Y на угол α:').onChange(function () {
@@ -97,7 +93,6 @@ const addFolderTurn = () => {
             -parseFloat(Math.sin(params.TurnY * Math.PI / 180).toFixed(2)), 0, parseFloat(Math.cos(params.TurnY * Math.PI / 180).toFixed(2)), 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
         console.log('params.TrunY')
     })
     folderTurn.add(params, 'TurnZ').name('Вокруг оси Z на угол α:').onChange(function () {
@@ -107,7 +102,6 @@ const addFolderTurn = () => {
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
         console.log('params.TrunZ')
     })
 }
@@ -120,7 +114,6 @@ const addFolderObliqueShift = () => {
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
         console.log('params.obliqueShiftXY', params.obliqueShiftXY)
     })
     folderObliqueShift.add(params, 'obliqueShiftXZ').name('Оси X по оси Z с коэффициентом k:').onChange(function () {
@@ -130,7 +123,6 @@ const addFolderObliqueShift = () => {
             params.obliqueShiftXZ, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
         console.log('params.obliqueShiftXZ', params.obliqueShiftXZ)
     })
     folderObliqueShift.add(params, 'obliqueShiftYX').name('Оси Y по оси X с коэффициентом k:').onChange(function () {
@@ -140,7 +132,6 @@ const addFolderObliqueShift = () => {
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
         console.log('params.obliqueShiftYX', params.obliqueShiftYX)
     })
     folderObliqueShift.add(params, 'obliqueShiftYZ').name('Оси Y по оси Z с коэффициентом k:').onChange(function () {
@@ -150,7 +141,6 @@ const addFolderObliqueShift = () => {
             0, params.obliqueShiftYZ, 1, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
         console.log('params.obliqueShiftYZ', params.obliqueShiftYZ)
     })
     folderObliqueShift.add(params, 'obliqueShiftZX').name('Оси Z по оси X с коэффициентом k:').onChange(function () {
@@ -160,7 +150,6 @@ const addFolderObliqueShift = () => {
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
         console.log('params.obliqueShiftZX', params.obliqueShiftZX)
     })
     folderObliqueShift.add(params, 'obliqueShiftZY').name('Оси Z по оси Y с коэффициентом k:').onChange(function () {
@@ -170,7 +159,6 @@ const addFolderObliqueShift = () => {
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
         console.log('params.obliqueShiftZY', params.obliqueShiftZY)
     })
 }
@@ -178,33 +166,30 @@ const addFolderObliqueShift = () => {
 const addFolderOop = () => {
     folderOop.add(params, 'oopX').name('По оси X с фокусным расстоянием fx:').onChange(function () {
         matrix.set(
-            1, 0, 0, ( 1/params.oopX),
+            1, 0, 0, (1 / params.oopX),
             0, 1, 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
-        console.log('params.oopX',  params.oopX)
+        console.log('1/params.oopX', 1 / params.oopX)
     })
     folderOop.add(params, 'oopY').name('По оси Y с фокусным расстоянием fy:').onChange(function () {
         matrix.set(
             1, 0, 0, 0,
-            0, 1, 0, (1/params.oopY),
+            0, 1, 0, (1 / params.oopY),
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeParallel = 0
-        console.log('params.oopY', params.oopY)
+        console.log('1/params.oopY', 1 / params.oopY)
     })
     folderOop.add(params, 'oopZ').name('По оси Z с фокусным расстоянием fz:').onChange(function () {
         matrix.set(
             1, 0, 0, 0,
             0, 1, 0, 0,
-            0, 0, 1, ( 1/params.oopZ),
+            0, 0, 1, (1 / params.oopZ),
             0, 0, 0, 1,
         )
-        activeParallel = 0
-        console.log('params.oopZ',  params.oopZ)
+        console.log('1/params.oopZ', 1 / params.oopZ)
     })
 }
 
@@ -248,7 +233,6 @@ const initGuiTable = () => {
             }
             console.log('buttonApply', matrix)
             geometry.applyMatrix4(matrix)
-            activeParallel = 0
         }
     };
 
@@ -323,7 +307,7 @@ const setupScence = () => {
     container.appendChild(renderer.domElement)
 
     cameraPerspective = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 1000)
-    cameraPerspective.position.set(params.oopX, params.oopY, params.oopZ)
+    cameraPerspective.position.set(0, 0, 100)
 
     calculationOrtoCoef()
 
@@ -336,8 +320,8 @@ const setupScence = () => {
     cameraRig.add(cameraOrtho)
 
     scene.add(cameraRig)
-    console.log(scene.clone())
-    activeCamera = cameraOrtho
+
+    activeCamera = cameraPerspective
     //add object
     addedVectors()
     // const boxGeometry = new THREE.BoxGeometry(50, 50, 50);

@@ -17807,7 +17807,7 @@ function WebGLPrograms( renderer, cubemaps, extensions, capabilities, bindingSta
 			programs[ i ] = programs[ programs.length - 1 ];
 			programs.pop();
 
-			// Free WebGL resources
+			// Free WebGL js
 			program.destroy();
 
 		}
@@ -21112,7 +21112,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 
 	}
 
-	// Setup resources for a Depth Texture for a FBO (needs an extension)
+	// Setup js for a Depth Texture for a FBO (needs an extension)
 	function setupDepthTexture( framebuffer, renderTarget ) {
 
 		const isCube = ( renderTarget && renderTarget.isWebGLCubeRenderTarget );
@@ -21157,7 +21157,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 
 	}
 
-	// Setup GL resources for a non-texture depth buffer
+	// Setup GL js for a non-texture depth buffer
 	function setupDepthRenderbuffer( renderTarget ) {
 
 		const renderTargetProperties = properties.get( renderTarget );
@@ -21198,7 +21198,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 
 	}
 
-	// Set up GL resources for the render target
+	// Set up GL js for the render target
 	function setupRenderTarget( renderTarget ) {
 
 		const renderTargetProperties = properties.get( renderTarget );
@@ -45856,7 +45856,7 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 		// clip must be known when specified via string
 		if ( clipObject === null ) return null;
 
-		// allocate all resources required to run it
+		// allocate all js required to run it
 		const newAction = new AnimationAction( this, clipObject, optionalRoot, blendMode );
 
 		this._bindAction( newAction, prototypeAction );
@@ -45966,7 +45966,7 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 
 	},
 
-	// free all resources specific to a particular clip
+	// free all js specific to a particular clip
 	uncacheClip: function ( clip ) {
 
 		const actions = this._actions,
@@ -46008,7 +46008,7 @@ AnimationMixer.prototype = Object.assign( Object.create( EventDispatcher.prototy
 
 	},
 
-	// free all resources specific to a particular root target object
+	// free all js specific to a particular root target object
 	uncacheRoot: function ( root ) {
 
 		const rootUuid = root.uuid,

@@ -13516,7 +13516,7 @@
 				// Remove from unordered set
 				var i = programs.indexOf(program);
 				programs[i] = programs[programs.length - 1];
-				programs.pop(); // Free WebGL resources
+				programs.pop(); // Free WebGL js
 
 				program.destroy();
 			}
@@ -15844,7 +15844,7 @@
 			}
 
 			_gl.bindRenderbuffer(36161, null);
-		} // Setup resources for a Depth Texture for a FBO (needs an extension)
+		} // Setup js for a Depth Texture for a FBO (needs an extension)
 
 
 		function setupDepthTexture(framebuffer, renderTarget) {
@@ -15875,7 +15875,7 @@
 			} else {
 				throw new Error('Unknown depthTexture format');
 			}
-		} // Setup GL resources for a non-texture depth buffer
+		} // Setup GL js for a non-texture depth buffer
 
 
 		function setupDepthRenderbuffer(renderTarget) {
@@ -15904,7 +15904,7 @@
 			}
 
 			_gl.bindFramebuffer(36160, null);
-		} // Set up GL resources for the render target
+		} // Set up GL js for the render target
 
 
 		function setupRenderTarget(renderTarget) {
@@ -33136,7 +33136,7 @@
 			} // clip must be known when specified via string
 
 
-			if (clipObject === null) return null; // allocate all resources required to run it
+			if (clipObject === null) return null; // allocate all js required to run it
 
 			var newAction = new AnimationAction(this, clipObject, optionalRoot, blendMode);
 
@@ -33211,7 +33211,7 @@
 		getRoot: function getRoot() {
 			return this._root;
 		},
-		// free all resources specific to a particular clip
+		// free all js specific to a particular clip
 		uncacheClip: function uncacheClip(clip) {
 			var actions = this._actions,
 					clipUuid = clip.uuid,
@@ -33243,7 +33243,7 @@
 				delete actionsByClip[clipUuid];
 			}
 		},
-		// free all resources specific to a particular root target object
+		// free all js specific to a particular root target object
 		uncacheRoot: function uncacheRoot(root) {
 			var rootUuid = root.uuid,
 					actionsByClip = this._actionsByClip;

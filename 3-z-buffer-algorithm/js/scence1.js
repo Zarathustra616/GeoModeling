@@ -1,5 +1,5 @@
 import Stats from '../../libs/stats.module.js';
-import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/OrbitControls.js';
+import {OrbitControls} from '../../libs/OrbitControls.js';
 import dat from '../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../libs/three.module.js";
 
@@ -20,7 +20,7 @@ const geometry = new THREE.Geometry()
 let matrix = new THREE.Matrix4()
 //Init mesh
 const material = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: false})
-const mesh = new THREE.Mesh(geometry, material);
+const mesh = new THREE.Mesh(geometry, material)
 
 //Init Parallel
 let activeParallel = 0
@@ -229,6 +229,7 @@ const initGuiTable = () => {
                     0, 0, 1, params.ParallelZ,
                     0, 0, 0, 1,
                 )
+                activeParallel = 0
             }
             console.log('buttonApply', matrix)
             geometry.applyMatrix4(matrix)
