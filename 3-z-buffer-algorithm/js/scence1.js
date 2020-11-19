@@ -251,7 +251,12 @@ const initGuiTable = () => {
 
     const buttonCenter = {
         add: function () {
-            base.center()
+            base.position.x = 0
+            base.position.y = 0
+            base.position.z = 0
+            base.scale.x = 5
+            base.scale.y = 5
+            base.scale.z = 5
         }
     }
 

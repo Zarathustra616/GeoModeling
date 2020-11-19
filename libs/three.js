@@ -20116,6 +20116,7 @@
 	var _obj$1 = new Object3D();
 
 	var _offset$1 = new Vector3();
+	var _offset$1 = new Vector3();
 
 	function Geometry() {
 		Object.defineProperty(this, 'id', {
