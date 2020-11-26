@@ -24,7 +24,7 @@ const mesh = new THREE.Mesh(geometry, material);
 
 //Init Parallel
 let activeParallel = 0
-let activeOop = 0
+let activeOop = null
 
 const setParams = () => params = {
     ParallelX: 0,
@@ -173,7 +173,7 @@ const addFolderOop = () => {
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeOop = 1
+        activeOop = 'x'
         console.log('params.oopX', params.oopX)
     })
     folderOop.add(params, 'oopY').name('По оси Y с фокусным расстоянием fy:').onFinishChange(function () {
@@ -183,7 +183,7 @@ const addFolderOop = () => {
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        activeOop = 1
+        activeOop = 'y'
         console.log('params.oopY', params.oopY)
     })
     folderOop.add(params, 'oopZ').name('По оси Z с фокусным расстоянием fz:').onFinishChange(function () {
@@ -193,7 +193,7 @@ const addFolderOop = () => {
             0, 0, 1, (1 / params.oopZ),
             0, 0, 0, 1,
         )
-        activeOop = 1
+        activeOop = 'z'
         console.log('params.oopZ', params.oopZ)
     })
 }
@@ -219,6 +219,29 @@ const addFolderScalingCoef = () => {
             0, 0, 0, 1,
         )
     })
+}
+
+const projectiveTransformation = () => {
+    if (activeOop === 'x') {
+        for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
+            geometry.vertices[vectorId]['x'] /= (params.oopX * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['y'] /= (params.oopX * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['z'] /= (params.oopX * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+        }
+    } else if (activeOop === 'y') {
+        for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
+            geometry.vertices[vectorId]['x'] /= (params.oopY * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['y'] /= (params.oopY * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['z'] /= (params.oopY * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+        }
+    } else if (activeOop === 'z') {
+        for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
+            geometry.vertices[vectorId]['x'] /= (params.oopZ * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['y'] /= (params.oopZ * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['z'] /= (params.oopZ * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+        }
+    }
+    activeOop = null
 }
 
 const initGuiTable = () => {
@@ -251,16 +274,8 @@ const initGuiTable = () => {
                 activeParallel = 0
             }
             console.log('buttonApply', matrix)
-            console.log(geometry)
             geometry.applyMatrix4(matrix)
-            console.log(geometry)
-            for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
-                geometry.vertices[vectorId]['x'] /= geometry.vertices[vectorId]['w']
-                geometry.vertices[vectorId]['y'] /= geometry.vertices[vectorId]['w']
-                geometry.vertices[vectorId]['z'] /= geometry.vertices[vectorId]['w']
-            }
-            console.log(geometry)
-
+            projectiveTransformation()
         }
     };
 
