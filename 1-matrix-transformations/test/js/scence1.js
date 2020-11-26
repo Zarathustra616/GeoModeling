@@ -222,9 +222,11 @@ const addFolderScalingCoef = () => {
 }
 
 const projectiveTransformation = () => {
+    console.log(geometry.vertices)
     if (activeOop === 'x') {
         for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
             let x = geometry.vertices[vectorId][activeOop]
+            console.log(x, activeOop, geometry.vertices[vectorId])
             geometry.vertices[vectorId]['x'] /= (1/params.oopX * x + geometry.vertices[vectorId]['w'])
             geometry.vertices[vectorId]['y'] /= (1/params.oopX * x + geometry.vertices[vectorId]['w'])
             geometry.vertices[vectorId]['z'] /= (1/params.oopX * x + geometry.vertices[vectorId]['w'])
@@ -284,8 +286,9 @@ const initGuiTable = () => {
 
     const buttonCenter = {
         add: function () {
-            geometry.normalize()
-            geometry.scale(50, 50, 50)
+            geometry.center()
+            // geometry.normalize()
+            // geometry.scale(50, 50, 50)
             console.log('geometry.clone() : ', geometry.clone())
         }
     }
