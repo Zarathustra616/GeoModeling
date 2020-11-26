@@ -230,15 +230,15 @@ const projectiveTransformation = () => {
         }
     } else if (activeOop === 'y') {
         for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
-            geometry.vertices[vectorId]['x'] /= (params.oopY * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
             geometry.vertices[vectorId]['y'] /= (params.oopY * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['x'] /= (params.oopY * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
             geometry.vertices[vectorId]['z'] /= (params.oopY * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
         }
     } else if (activeOop === 'z') {
         for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
+            geometry.vertices[vectorId]['z'] /= (params.oopZ * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
             geometry.vertices[vectorId]['x'] /= (params.oopZ * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
             geometry.vertices[vectorId]['y'] /= (params.oopZ * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['z'] /= (params.oopZ * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
         }
     }
     activeOop = null
@@ -339,7 +339,7 @@ const setupScence = () => {
     container.appendChild(renderer.domElement)
 
     cameraPerspective = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 1000)
-    cameraPerspective.position.set(params.oopX, params.oopY, params.oopZ)
+    cameraPerspective.position.set(0, 100, 0)
 
     calculationOrtoCoef()
 

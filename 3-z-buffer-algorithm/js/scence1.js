@@ -378,6 +378,8 @@ async function main() {
     container.appendChild(stats.dom);
     document.addEventListener('keydown', onKeyDown, false)
     render();
+    var gl = renderer.context;
+    gl.disable(gl.DEPTH_TEST);
 }
 
 main()
