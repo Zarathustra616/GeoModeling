@@ -224,21 +224,24 @@ const addFolderScalingCoef = () => {
 const projectiveTransformation = () => {
     if (activeOop === 'x') {
         for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
-            geometry.vertices[vectorId]['x'] /= (params.oopX * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['y'] /= (params.oopX * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['z'] /= (params.oopX * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+            let x = geometry.vertices[vectorId][activeOop]
+            geometry.vertices[vectorId]['x'] /= (1/params.oopX * x + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['y'] /= (1/params.oopX * x + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['z'] /= (1/params.oopX * x + geometry.vertices[vectorId]['w'])
         }
     } else if (activeOop === 'y') {
         for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
-            geometry.vertices[vectorId]['y'] /= (params.oopY * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['x'] /= (params.oopY * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['z'] /= (params.oopY * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+            let y = geometry.vertices[vectorId][activeOop]
+            geometry.vertices[vectorId]['x'] /= (1/params.oopY * y + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['y'] /= (1/params.oopY * y + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['z'] /= (1/params.oopY * y + geometry.vertices[vectorId]['w'])
         }
     } else if (activeOop === 'z') {
         for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
-            geometry.vertices[vectorId]['z'] /= (params.oopZ * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['x'] /= (params.oopZ * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['y'] /= (params.oopZ * geometry.vertices[vectorId][activeOop] + geometry.vertices[vectorId]['w'])
+            let z = geometry.vertices[vectorId][activeOop]
+            geometry.vertices[vectorId]['x'] /= (1/params.oopZ * z + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['y'] /= (1/params.oopZ * z + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['z'] /= (1/params.oopZ * z + geometry.vertices[vectorId]['w'])
         }
     }
     activeOop = null

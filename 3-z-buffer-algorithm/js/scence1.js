@@ -310,6 +310,7 @@ const setupScence = () => {
     renderer.setClearColor(0xdfe9c8, 1)
     container.appendChild(renderer.domElement)
 
+
     cameraPerspective = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 1000)
     cameraPerspective.position.set(0, 0, 100)
 
