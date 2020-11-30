@@ -1,9 +1,7 @@
 import Stats from '../../../libs/stats.module.js';
 import {OrbitControls} from '../../../libs/OrbitControls.js';
-import {FaceNormalsHelper} from '../../../libs/FaceNormalsHelper.js';
 import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../../libs/three.module.js";
-
 
 //Init Gui Table
 let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel, folderScalingCoef
@@ -14,7 +12,7 @@ let dataScence = null
 let WIDTH, HEIGHT, container, renderer
 const scene = new THREE.Scene()
 //Init camera
-let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats, helper, direction
+let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats
 //Init OrthographicCamera coef
 let fov_y, depht_s, Z, aspect, size_y, size_x
 //Init geometry
@@ -283,21 +281,13 @@ const initGuiTable = () => {
             console.log('buttonApply', matrix)
             geometry.applyMatrix4(matrix)
             projectiveTransformation()
-
-            scene.remove(helper)
-            helper = new FaceNormalsHelper(mesh, 2, 0x00ff00, 1 )
-            scene.add(helper)
-
-            let direction = new THREE.Vector3( )
-            mesh.getWorldDirection(direction)
-            console.log(direction)
         }
     };
 
     const buttonCenter = {
         add: function () {
             geometry.normalize()
-            geometry.scale(40, 40, 40)
+            geometry.scale(38, 38, 38)
             console.log('geometry.clone() : ', geometry.clone())
         }
     }
@@ -334,12 +324,10 @@ const addedVectors = () => {
                 }
                 geometry.computeBoundingSphere()
             }
-            geometry.computeFaceNormals()
         }
     } catch (e) {
         console.log('addedVectors:', e)
     }
-
     console.log(geometry)
 }
 
@@ -379,14 +367,6 @@ const setupScence = () => {
 
     controls = new OrbitControls(activeCamera, renderer.domElement)
     controls.update()
-
-    helper = new FaceNormalsHelper(mesh, 2, 0x00ff00, 1 )
-    scene.add(helper)
-
-
-    let direction = new THREE.Vector3( )
-    mesh.getWorldDirection(direction)
-    console.log(direction)
 }
 
 function render() {
