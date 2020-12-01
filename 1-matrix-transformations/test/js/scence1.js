@@ -331,6 +331,7 @@ const addedVectors = () => {
     console.log(geometry)
 }
 
+
 const setupScence = () => {
     WIDTH = window.innerWidth
     HEIGHT = window.innerHeight
@@ -384,7 +385,6 @@ async function getFile(url) {
         console.error(err)
     }
 }
-
 
 const onKeyDown = (event) => {
     switch (event.keyCode) {

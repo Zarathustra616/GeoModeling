@@ -1,8 +1,8 @@
-import Stats from '../../../libs/stats.module.js';
-import {OrbitControls} from '../../../libs/OrbitControls.js';
-import {FaceNormalsHelper} from '../../../libs/FaceNormalsHelper.js';
-import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
-import * as THREE from "../../../libs/three.module.js";
+import Stats from '../../libs/stats.module.js';
+import {OrbitControls} from '../../libs/OrbitControls.js';
+import {FaceNormalsHelper} from '../../libs/FaceNormalsHelper.js';
+import dat from '../../libs/dat.gui/build/dat.gui.module.js';
+import * as THREE from "../../libs/three.module.js";
 
 //Init Gui Table
 let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel, folderScalingCoef
@@ -13,7 +13,7 @@ let dataScence = null
 let WIDTH, HEIGHT, container, renderer
 const scene = new THREE.Scene()
 //Init camera
-let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats, helper, direction
+let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats, helper
 //Init OrthographicCamera coef
 let fov_y, depht_s, Z, aspect, size_y, size_x
 //Init geometry
@@ -26,6 +26,8 @@ const mesh = new THREE.Mesh(geometry, material);
 //Init Parallel
 let activeParallel = 0
 let activeOop = null
+
+let direction = new THREE.Vector3( )
 
 const setParams = () => params = {
     ParallelX: 0,
@@ -280,16 +282,19 @@ const initGuiTable = () => {
                 activeParallel = 0
             }
             console.log('buttonApply', matrix)
+            geometry.elementsNeedUpdate = true
             geometry.applyMatrix4(matrix)
             projectiveTransformation()
+
+            addedVectors()
 
             scene.remove(helper)
             helper = new FaceNormalsHelper(mesh, 2, 0x00ff00, 1 )
             scene.add(helper)
 
-            let direction = new THREE.Vector3( )
             mesh.getWorldDirection(direction)
             console.log(direction)
+
         }
     };
 
@@ -334,6 +339,14 @@ const addedVectors = () => {
                 geometry.computeBoundingSphere()
             }
             geometry.computeFaceNormals()
+            mesh.getWorldDirection(direction)
+            console.log(direction)
+            for (let vectorId = 0; vectorId < geometry.faces.length; vectorId++){
+              if(direction.dot(geometry.faces[vectorId]['normal'])<0){
+                  geometry.faces.splice(vectorId,1)
+                  vectorId--
+              }
+            }
         }
     } catch (e) {
         console.log('addedVectors:', e)
@@ -381,8 +394,6 @@ const setupScence = () => {
     helper = new FaceNormalsHelper(mesh, 2, 0x00ff00, 1 )
     scene.add(helper)
 
-
-    let direction = new THREE.Vector3( )
     mesh.getWorldDirection(direction)
     console.log(direction)
 }
