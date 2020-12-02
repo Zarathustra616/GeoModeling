@@ -85,8 +85,8 @@ const addFolderTurn = () => {
     folderTurn.add(params, 'TurnX').name('Вокруг оси X на угол α:').onFinishChange(function () {
         matrix.set(
             1.0, 0.0, 0.0, 0.0,
-            0.0, parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
-            0.0, -parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
+            0.0, parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), -parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
+            0.0, parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
             0.0, 0.0, 0.0, 1.0,
         )
         console.log('params.TurnX', matrix)
@@ -286,7 +286,9 @@ const initGuiTable = () => {
             geometry.applyMatrix4(matrix)
             projectiveTransformation()
 
+
             addedVectors()
+
 
             scene.remove(helper)
             helper = new FaceNormalsHelper(mesh, 2, 0x00ff00, 1 )
@@ -321,6 +323,7 @@ const calculationOrtoCoef = () => {
 
 const addedVectors = () => {
     console.log("addedVectors dataScence", dataScence)
+    geometry.dispose()
     try {
         for (let property in dataScence) {
             if (property === 'points') {
@@ -347,6 +350,7 @@ const addedVectors = () => {
                   vectorId--
               }
             }
+
         }
     } catch (e) {
         console.log('addedVectors:', e)
