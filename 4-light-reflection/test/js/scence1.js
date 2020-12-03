@@ -1,8 +1,7 @@
-import Stats from '../../libs/stats.module.js';
-import {OrbitControls} from '../../libs/OrbitControls.js';
-import dat from '../../libs/dat.gui/build/dat.gui.module.js';
-import * as THREE from "../../libs/three.module.js";
-import {Vector3} from "../../libs/three.module.js";
+import Stats from '../../../libs/stats.module.js';
+import {OrbitControls} from '../../../libs/OrbitControls.js';
+import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
+import * as THREE from "../../../libs/three.module.js";
 
 //Init Gui Table
 let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel, folderScalingCoef
@@ -17,10 +16,20 @@ let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats
 //Init OrthographicCamera coef
 let fov_y, depht_s, Z, aspect, size_y, size_x
 //Init geometry
-let size, side, geometry, material, mesh
-const base = new THREE.Object3D()
+// const cubeSize = 4;
+// const geometry = new THREE.BoxBufferGeometry(cubeSize, cubeSize, cubeSize);
+// const cubeMat = new THREE.MeshStandardMaterial({color: '#8AC'});
+// cubeMat.roughness = 0
+// const mesh = new THREE.Mesh(geometry, cubeMat);
 
+// scene.add(mesh);
+const geometry = new THREE.Geometry()
 let matrix = new THREE.Matrix4()
+//Init mesh
+const material = new THREE.MeshStandardMaterial({color: '#8AC'});
+const mesh = new THREE.Mesh(geometry, material);
+mesh.position.set(4+ 1, 4 / 2, 0);
+
 //Init Parallel
 let activeParallel = 0
 let activeOop = null
@@ -81,8 +90,8 @@ const addFolderTurn = () => {
     folderTurn.add(params, 'TurnX').name('Вокруг оси X на угол α:').onFinishChange(function () {
         matrix.set(
             1.0, 0.0, 0.0, 0.0,
-            0.0, parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
-            0.0, -parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
+            0.0, parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), -parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
+            0.0, parseFloat(Math.sin(params.TurnX * Math.PI / 180).toFixed(2)), parseFloat(Math.cos(params.TurnX * Math.PI / 180).toFixed(2)), 0.0,
             0.0, 0.0, 0.0, 1.0,
         )
         console.log('params.TurnX', matrix)
@@ -172,7 +181,8 @@ const addFolderOop = () => {
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        console.log('1/params.oopX', 1 / params.oopX)
+        activeOop = 'x'
+        console.log('params.oopX', params.oopX)
     })
     folderOop.add(params, 'oopY').name('По оси Y с фокусным расстоянием fy:').onFinishChange(function () {
         matrix.set(
@@ -181,7 +191,8 @@ const addFolderOop = () => {
             0, 0, 1, 0,
             0, 0, 0, 1,
         )
-        console.log('1/params.oopY', 1 / params.oopY)
+        activeOop = 'y'
+        console.log('params.oopY', params.oopY)
     })
     folderOop.add(params, 'oopZ').name('По оси Z с фокусным расстоянием fz:').onFinishChange(function () {
         matrix.set(
@@ -190,7 +201,8 @@ const addFolderOop = () => {
             0, 0, 1, (1 / params.oopZ),
             0, 0, 0, 1,
         )
-        console.log('1/params.oopZ', 1 / params.oopZ)
+        activeOop = 'z'
+        console.log('params.oopZ', params.oopZ)
     })
 }
 
@@ -207,7 +219,7 @@ const addFolderParallel = () => {
 }
 
 const addFolderScalingCoef = () => {
-    folderScalingCoef.add(params, 'ScalingCoef').name('Маштаб: ').onFinishChange(function () {
+    folderScalingCoef.add(params, 'ScalingCoef').name('Масштаб:').onFinishChange(function () {
         matrix.set(
             params.ScalingCoef, 0, 0, 0,
             0, params.ScalingCoef, 0, 0,
@@ -223,23 +235,23 @@ const projectiveTransformation = () => {
         for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
             let x = geometry.vertices[vectorId][activeOop]
             console.log(x, activeOop, geometry.vertices[vectorId])
-            geometry.vertices[vectorId]['x'] /= (1/params.oopX * x + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['y'] /= (1/params.oopX * x + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['z'] /= (1/params.oopX * x + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['x'] /= (1 / params.oopX * x + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['y'] /= (1 / params.oopX * x + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['z'] /= (1 / params.oopX * x + geometry.vertices[vectorId]['w'])
         }
     } else if (activeOop === 'y') {
         for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
             let y = geometry.vertices[vectorId][activeOop]
-            geometry.vertices[vectorId]['x'] /= (1/params.oopY * y + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['y'] /= (1/params.oopY * y + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['z'] /= (1/params.oopY * y + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['x'] /= (1 / params.oopY * y + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['y'] /= (1 / params.oopY * y + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['z'] /= (1 / params.oopY * y + geometry.vertices[vectorId]['w'])
         }
     } else if (activeOop === 'z') {
         for (let vectorId = 0; vectorId < geometry.vertices.length; vectorId++) {
             let z = geometry.vertices[vectorId][activeOop]
-            geometry.vertices[vectorId]['x'] /= (1/params.oopZ * z + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['y'] /= (1/params.oopZ * z + geometry.vertices[vectorId]['w'])
-            geometry.vertices[vectorId]['z'] /= (1/params.oopZ * z + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['x'] /= (1 / params.oopZ * z + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['y'] /= (1 / params.oopZ * z + geometry.vertices[vectorId]['w'])
+            geometry.vertices[vectorId]['z'] /= (1 / params.oopZ * z + geometry.vertices[vectorId]['w'])
         }
     }
     activeOop = null
@@ -265,6 +277,7 @@ const initGuiTable = () => {
     const buttonApply = {
         add: function () {
             if (activeParallel === 1) {
+                console.log(params.ParallelX, params.ParallelY, params.ParallelZ)
                 matrix.set(
                     1, 0, 0, params.ParallelX,
                     0, 1, 0, params.ParallelY,
@@ -273,20 +286,17 @@ const initGuiTable = () => {
                 )
                 activeParallel = 0
             }
-            console.log('buttonApply', base)
-            base.applyMatrix4(matrix)
+            console.log('buttonApply', matrix)
+            geometry.applyMatrix4(matrix)
             projectiveTransformation()
         }
     };
 
     const buttonCenter = {
         add: function () {
-            base.position.x = 0
-            base.position.y = 0
-            base.position.z = 0
-            base.scale.x = 4
-            base.scale.y = 4
-            base.scale.z = 4
+            geometry.normalize()
+            geometry.scale(38, 38, 38)
+            console.log('geometry.clone() : ', geometry.clone())
         }
     }
 
@@ -304,27 +314,31 @@ const calculationOrtoCoef = () => {
 }
 
 const addedVectors = () => {
-    /* Да это жестко. */
-    console.log("dataScence", dataScence)
-    console.log(dataScence['edge']['length'])
-    size = 6
-    let vectorsArray = []
-    side = THREE.DoubleSide
-    geometry = new THREE.PlaneBufferGeometry(size, size);
-    for (let vectorId = 0; vectorId < dataScence['edge']['length']; vectorId += 2) {
-        vectorsArray.push({position: dataScence['edge'][vectorId], up: dataScence['edge'][vectorId + 1],})
+    console.log("addedVectors dataScence", dataScence)
+    try {
+        for (let property in dataScence) {
+            if (property === 'points') {
+                for (let numberArray in dataScence[property]) {
+                    // console.log(dataScence[property][numberArray])
+                    let x = dataScence[property][numberArray][0]
+                    let y = dataScence[property][numberArray][1]
+                    let z = dataScence[property][numberArray][2]
+                    let h = dataScence[property][numberArray][3]
+                    geometry.vertices.push(new THREE.Vector4(x, y, z, h))
+                }
+            } else if (property === 'segments') {
+                for (let numberSegment in dataScence[property]) {
+                    geometry.faces.push(new THREE.Face3(dataScence[property][numberSegment][0], dataScence[property][numberSegment][1], dataScence[property][numberSegment][2]))
+                }
+                geometry.computeBoundingSphere()
+            }
+        }
+    } catch (e) {
+        console.log('addedVectors:', e)
     }
-    vectorsArray.forEach((settings, ndx) => {
-        material = new THREE.MeshBasicMaterial({side});
-        material.color.setHSL(ndx / 6, .5, .5);
-        mesh = new THREE.Mesh(geometry, material);
-        mesh.up.set(...settings.up);
-        mesh.lookAt(...settings.position);
-        mesh.position.set(...settings.position).multiplyScalar(size * .75)
-        base.add(mesh)
-    })
-    scene.add(base)
+    console.log(geometry)
 }
+
 
 const setupScence = () => {
     WIDTH = window.innerWidth
@@ -338,9 +352,8 @@ const setupScence = () => {
     renderer.setClearColor(0xdfe9c8, 1)
     container.appendChild(renderer.domElement)
 
-
     cameraPerspective = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 1000)
-    cameraPerspective.position.set(0, 0, 100)
+    cameraPerspective.position.set(0, 100, 0)
 
     calculationOrtoCoef()
 
@@ -354,12 +367,22 @@ const setupScence = () => {
 
     scene.add(cameraRig)
 
-    activeCamera = cameraPerspective
+    activeCamera = cameraOrtho
     //add object
     addedVectors()
 
+    cameraRig.add(mesh)
+    scene.add(mesh)
+
     controls = new OrbitControls(activeCamera, renderer.domElement)
     controls.update()
+
+    const intensity = 1;
+    const light = new THREE.DirectionalLight(0xFFFFFF, intensity);
+    light.position.set(0, 0, 10);
+    light.target.position.set(0, 0, 0);
+    scene.add(light);
+    scene.add(light.target);
 }
 
 function render() {
@@ -377,7 +400,6 @@ async function getFile(url) {
         console.error(err)
     }
 }
-
 
 const onKeyDown = (event) => {
     switch (event.keyCode) {
@@ -402,7 +424,7 @@ async function main() {
     stats = new Stats();
     container.appendChild(stats.dom);
     document.addEventListener('keydown', onKeyDown, false)
-    render()
+    render();
 }
 
 main()
