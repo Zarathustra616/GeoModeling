@@ -330,10 +330,6 @@ const setupScence = () => {
     //add object
     addedVectors()
 
-    // cameraRig.add(mesh)
-    // scene.add(mesh)
-
-
     controls = new OrbitControls(activeCamera, renderer.domElement)
     controls.update()
 }
@@ -379,8 +375,7 @@ async function main() {
     container.appendChild(stats.dom);
     document.addEventListener('keydown', onKeyDown, false)
     render();
-    var gl = renderer.context;
-    gl.disable(gl.DEPTH_TEST);
+
 }
 
 main()
