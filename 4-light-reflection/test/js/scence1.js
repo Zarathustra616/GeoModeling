@@ -16,14 +16,14 @@ let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats
 //Init OrthographicCamera coef
 let fov_y, depht_s, Z, aspect, size_y, size_x
 //Init geometry
-// const cubeSize = 4;
-// const geometry = new THREE.BoxBufferGeometry(cubeSize, cubeSize, cubeSize);
-// const cubeMat = new THREE.MeshStandardMaterial({color: '#8AC'});
-// cubeMat.roughness = 0
-// const mesh = new THREE.Mesh(geometry, cubeMat);
-//
-// scene.add(mesh);
-const geometry = new THREE.Geometry()
+const cubeSize = 4;
+const geometry = new THREE.BoxBufferGeometry(cubeSize, cubeSize, cubeSize);
+const cubeMat = new THREE.MeshStandardMaterial({color: '#8AC'});
+cubeMat.roughness = 0
+const mesh = new THREE.Mesh(geometry, cubeMat);
+
+scene.add(mesh);
+// const geometry = new THREE.Geometry()
 let matrix = new THREE.Matrix4()
 //Init mesh
 
@@ -366,9 +366,11 @@ const setupScence = () => {
 
     activeCamera = cameraOrtho
     //add object
-    addedVectors()
+    // addedVectors()
     const material = new THREE.MeshStandardMaterial({color: '#8AC'});
     material.roughness = 0
+    material.metalness = 1
+
     const mesh = new THREE.Mesh(geometry, material);
     geometry.computeFaceNormals();
     geometry.computeVertexNormals();
@@ -381,7 +383,7 @@ const setupScence = () => {
 
     const intensity = 1;
     const light = new THREE.DirectionalLight(0xFFFFFF, intensity);
-    light.position.set(1, 1, 1)
+    light.position.set(0, 0, 10)
     light.target.position.set(0, 0, 0);
     scene.add(light)
     scene.add(light.target)
