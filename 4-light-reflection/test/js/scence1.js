@@ -1,4 +1,5 @@
 import Stats from '../../../libs/stats.module.js';
+import {FaceNormalsHelper} from '../../../libs/FaceNormalsHelper.js';
 import {OrbitControls} from '../../../libs/OrbitControls.js';
 import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../../libs/three.module.js";
@@ -12,24 +13,30 @@ let dataScence = null
 let WIDTH, HEIGHT, container, renderer
 const scene = new THREE.Scene()
 //Init camera
-let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats
+let cameraPerspective, cameraRig, cameraOrtho, activeCamera, controls, stats, helper
 //Init OrthographicCamera coef
 let fov_y, depht_s, Z, aspect, size_y, size_x
 //Init geometry
 const cubeSize = 4;
-const geometry = new THREE.BoxBufferGeometry(cubeSize, cubeSize, cubeSize);
+const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
 const cubeMat = new THREE.MeshStandardMaterial({color: '#8AC'});
 cubeMat.roughness = 0
+console.log(geometry)
 const mesh = new THREE.Mesh(geometry, cubeMat);
+helper = new FaceNormalsHelper(mesh, 2, 0x00ff00, 1 )
+
 
 scene.add(mesh);
+scene.add(helper)
 // const geometry = new THREE.Geometry()
 let matrix = new THREE.Matrix4()
 //Init mesh
-
+let cos=1, cosarr=[]
 //Init Parallel
 let activeParallel = 0
 let activeOop = null
+
+let direction = new THREE.Vector3( )
 
 const setParams = () => params = {
     ParallelX: 0,
@@ -286,6 +293,21 @@ const initGuiTable = () => {
             console.log('buttonApply', matrix)
             geometry.applyMatrix4(matrix)
             projectiveTransformation()
+
+            scene.remove(helper)
+            helper = new FaceNormalsHelper(mesh, 2, 0x00ff00, 1 )
+            scene.add(helper)
+
+            cosarr=[]
+            for (let vectorId = 0; vectorId < geometry.faces.length; vectorId++){
+                let reflectionVector=reflect(direction.multiplyScalar(-1),geometry.faces[vectorId]['normal'])
+                let angle = direction.angleTo(reflectionVector)
+                cos=Math.cos(angle)
+                cosarr.push(cos)
+                cos=Math.min.apply(null,cosarr)
+                console.log(cosarr)
+            }
+            console.log(cos)
         }
     };
 
@@ -336,6 +358,18 @@ const addedVectors = () => {
     console.log(geometry)
 }
 
+function reflect(vector, normal) {
+    let reflect = new THREE.Vector3();
+    reflect.copy(vector)
+    reflect.dot(normal)
+    reflect.cross(normal)
+    reflect.multiplyScalar(-2)
+    reflect.add(vector);
+    return reflect;
+}
+
+
+
 
 const setupScence = () => {
     WIDTH = window.innerWidth
@@ -367,10 +401,8 @@ const setupScence = () => {
     activeCamera = cameraOrtho
     //add object
     // addedVectors()
-    const material = new THREE.MeshStandardMaterial({color: '#8AC'});
-    material.roughness = 0
-    material.metalness = 1
 
+    const material = new THREE.MeshStandardMaterial({color: '#8AC'});
     const mesh = new THREE.Mesh(geometry, material);
     geometry.computeFaceNormals();
     geometry.computeVertexNormals();
@@ -378,12 +410,29 @@ const setupScence = () => {
     cameraRig.add(mesh)
     scene.add(mesh)
 
+
+    mesh.getWorldDirection(direction)
+    console.log(direction)
+
+
+    for (let vectorId = 0; vectorId < geometry.faces.length; vectorId++){
+        let reflectionVector=reflect(direction.multiplyScalar(-1),geometry.faces[vectorId]['normal'])
+        let angle = direction.angleTo(reflectionVector)
+        cos=Math.cos(angle)
+        cosarr.push(cos)
+        cos=Math.min.apply(null,cosarr)
+        console.log(cos)
+    }
+
+    material.metalness=1*Math.pow(cos,5)
+    material.roughness=0
+    material.flatShading=true
     controls = new OrbitControls(activeCamera, renderer.domElement)
     controls.update()
 
     const intensity = 1;
     const light = new THREE.DirectionalLight(0xFFFFFF, intensity);
-    light.position.set(0, 0, 10)
+    light.position.set(0, 0, 1)
     light.target.position.set(0, 0, 0);
     scene.add(light)
     scene.add(light.target)
