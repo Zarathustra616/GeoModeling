@@ -5,7 +5,8 @@ import dat from '../../../libs/dat.gui/build/dat.gui.module.js';
 import * as THREE from "../../../libs/three.module.js";
 
 //Init Gui Table
-let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel, folderScalingCoef
+let gui, params, folderScaling, folderTurn, folderObliqueShift, folderOop, folderParallel, folderScalingCoef,
+    folderReflection
 //Init Json
 const url = 'cube.json'
 let dataScence = null
@@ -19,24 +20,23 @@ let fov_y, depht_s, Z, aspect, size_y, size_x
 //Init geometry
 const cubeSize = 4;
 const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-const cubeMat = new THREE.MeshStandardMaterial({color: '#8AC'});
-cubeMat.roughness = 0
-console.log(geometry)
-const mesh = new THREE.Mesh(geometry, cubeMat);
-helper = new FaceNormalsHelper(mesh, 2, 0x00ff00, 1 )
+const material = new THREE.MeshStandardMaterial({color: '#8AC'});
+const mesh = new THREE.Mesh(geometry, material);
 
-
+helper = new FaceNormalsHelper(mesh, 2, 0x00ff00, 1)
 scene.add(mesh);
 scene.add(helper)
 // const geometry = new THREE.Geometry()
 let matrix = new THREE.Matrix4()
 //Init mesh
-let cos=1, cosarr=[]
+let cos = 1, cosarr = []
 //Init Parallel
 let activeParallel = 0
 let activeOop = null
+// Coef reflection
+let metalnessCoef, roughnessCoef, specularityCoef
 
-let direction = new THREE.Vector3( )
+let direction = new THREE.Vector3()
 
 const setParams = () => params = {
     ParallelX: 0,
@@ -58,6 +58,9 @@ const setParams = () => params = {
     oopY: 0,
     oopZ: 0,
     ScalingCoef: 1,
+    mirrorReflection: 0,
+    diffuseReflection: 0,
+    specularity: 0,
 }
 
 const addFolderScaling = () => {
@@ -233,6 +236,18 @@ const addFolderScalingCoef = () => {
     })
 }
 
+const addFolderReflection = () => {
+    folderReflection.add(params, 'mirrorReflection').name('Зеркально отражение:').onFinishChange(function () {
+        metalnessCoef = params.mirrorReflection
+    })
+    folderReflection.add(params, 'diffuseReflection').name('Диффузное отражение:').onFinishChange(function () {
+        roughnessCoef = params.diffuseReflection
+    })
+    folderReflection.add(params, 'specularity').name('Степень зеркальности:').onFinishChange(function () {
+        specularityCoef = params.specularity
+    })
+}
+
 const projectiveTransformation = () => {
     console.log(geometry.vertices)
     if (activeOop === 'x') {
@@ -269,6 +284,7 @@ const initGuiTable = () => {
     folderOop = gui.addFolder('Матрица ОПП')
     folderParallel = gui.addFolder('Матрица параллельного переноса на вектор')
     folderScalingCoef = gui.addFolder('Коэффициент масштабирования')
+    folderReflection = gui.addFolder('Враг в отражении')
 
     setParams()
     addFolderScaling()
@@ -277,6 +293,7 @@ const initGuiTable = () => {
     addFolderOop()
     addFolderParallel()
     addFolderScalingCoef()
+    addFolderReflection()
 
     const buttonApply = {
         add: function () {
@@ -295,16 +312,16 @@ const initGuiTable = () => {
             projectiveTransformation()
 
             scene.remove(helper)
-            helper = new FaceNormalsHelper(mesh, 2, 0x00ff00, 1 )
+            helper = new FaceNormalsHelper(mesh, 2, 0x00ff00, 1)
             scene.add(helper)
 
-            cosarr=[]
-            for (let vectorId = 0; vectorId < geometry.faces.length; vectorId++){
-                let reflectionVector=reflect(direction.multiplyScalar(-1),geometry.faces[vectorId]['normal'])
+            cosarr = []
+            for (let vectorId = 0; vectorId < geometry.faces.length; vectorId++) {
+                let reflectionVector = reflect(direction.multiplyScalar(-1), geometry.faces[vectorId]['normal'])
                 let angle = direction.angleTo(reflectionVector)
-                cos=Math.cos(angle)
+                cos = Math.cos(angle)
                 cosarr.push(cos)
-                cos=Math.min.apply(null,cosarr)
+                cos = Math.min.apply(null, cosarr)
                 console.log(cosarr)
             }
             console.log(cos)
@@ -319,8 +336,16 @@ const initGuiTable = () => {
         }
     }
 
+    const buttonMaterial = {
+        add: function () {
+            material.metalness = metalnessCoef * Math.pow(cos, specularityCoef)
+            material.roughness = roughnessCoef
+        }
+    }
+
     gui.add(buttonApply, 'add').name('Apply')
     gui.add(buttonCenter, 'add').name('Center')
+    gui.add(buttonMaterial, 'add').name('Material')
 }
 
 const calculationOrtoCoef = () => {
@@ -368,9 +393,6 @@ function reflect(vector, normal) {
     return reflect;
 }
 
-
-
-
 const setupScence = () => {
     WIDTH = window.innerWidth
     HEIGHT = window.innerHeight
@@ -402,8 +424,6 @@ const setupScence = () => {
     //add object
     // addedVectors()
 
-    const material = new THREE.MeshStandardMaterial({color: '#8AC'});
-    const mesh = new THREE.Mesh(geometry, material);
     geometry.computeFaceNormals();
     geometry.computeVertexNormals();
 
@@ -415,18 +435,18 @@ const setupScence = () => {
     console.log(direction)
 
 
-    for (let vectorId = 0; vectorId < geometry.faces.length; vectorId++){
-        let reflectionVector=reflect(direction.multiplyScalar(-1),geometry.faces[vectorId]['normal'])
+    for (let vectorId = 0; vectorId < geometry.faces.length; vectorId++) {
+        let reflectionVector = reflect(direction.multiplyScalar(-1), geometry.faces[vectorId]['normal'])
         let angle = direction.angleTo(reflectionVector)
-        cos=Math.cos(angle)
+        cos = Math.cos(angle)
         cosarr.push(cos)
-        cos=Math.min.apply(null,cosarr)
+        cos = Math.min.apply(null, cosarr)
         console.log(cos)
     }
 
-    material.metalness=1*Math.pow(cos,5)
-    material.roughness=0
-    material.flatShading=true
+    material.metalness = 1 * Math.pow(cos, 1)
+    material.roughness = 0
+    material.flatShading = true
     controls = new OrbitControls(activeCamera, renderer.domElement)
     controls.update()
 
@@ -442,7 +462,6 @@ function render() {
     requestAnimationFrame(render);
     renderer.render(scene, activeCamera);
 }
-
 
 async function getFile(url) {
     try {
