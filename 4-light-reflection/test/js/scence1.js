@@ -321,7 +321,9 @@ const initGuiTable = () => {
                 let angle = direction.angleTo(reflectionVector)
                 cos = Math.cos(angle)
                 cosarr.push(cos)
-                cos = Math.min.apply(null, cosarr)
+                let sum = cosarr.reduce((a, b) => a + b, 0);
+                let result = sum / cosarr.length;
+                cos = result
                 console.log(cosarr)
             }
             console.log(cos)
@@ -340,6 +342,8 @@ const initGuiTable = () => {
         add: function () {
             material.metalness = metalnessCoef * Math.pow(cos, specularityCoef)
             material.roughness = roughnessCoef
+            console.log(material.metalness )
+            console.log(material.roughness )
         }
     }
 
@@ -424,6 +428,7 @@ const setupScence = () => {
     //add object
     // addedVectors()
 
+
     geometry.computeFaceNormals();
     geometry.computeVertexNormals();
 
@@ -440,11 +445,14 @@ const setupScence = () => {
         let angle = direction.angleTo(reflectionVector)
         cos = Math.cos(angle)
         cosarr.push(cos)
-        cos = Math.min.apply(null, cosarr)
+        let sum = cosarr.reduce((a, b) => a + b, 0);
+        let result = sum / cosarr.length;
+        cos = result
         console.log(cos)
     }
 
-    material.metalness = 1 * Math.pow(cos, 1)
+
+    material.metalness = 0 * Math.pow(cos, 0)
     material.roughness = 0
     material.flatShading = true
     controls = new OrbitControls(activeCamera, renderer.domElement)
