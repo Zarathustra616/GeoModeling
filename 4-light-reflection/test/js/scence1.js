@@ -342,11 +342,10 @@ const initGuiTable = () => {
         add: function () {
             material.metalness = metalnessCoef * Math.pow(cos, specularityCoef)
             material.roughness = roughnessCoef
-            console.log(material.metalness )
-            console.log(material.roughness )
+            console.log(material.metalness)
+            console.log(material.roughness)
         }
     }
-
     gui.add(buttonApply, 'add').name('Apply')
     gui.add(buttonCenter, 'add').name('Center')
     gui.add(buttonMaterial, 'add').name('Material')
