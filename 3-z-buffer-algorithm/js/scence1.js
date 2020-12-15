@@ -1,3 +1,4 @@
+
 import Stats from '../../libs/stats.module.js';
 import {OrbitControls} from '../../libs/OrbitControls.js';
 import dat from '../../libs/dat.gui/build/dat.gui.module.js';
@@ -280,19 +281,19 @@ const addedVectors = () => {
     side = THREE.DoubleSide
     geometry = new THREE.PlaneBufferGeometry(size, size);
     [
-        {position: [-1, 0, 0], up: [0, 1, 0],},
-        {position: [1, 0, 0], up: [0, -1, 0],},
-        {position: [0, -1, 0], up: [0, 0, -1],},
-        {position: [0, 1, 0], up: [0, 0, 1],},
-        {position: [0, 0, -1], up: [1, 0, 0],},
-        {position: [0, 0, 1], up: [-1, 0, 0],},
+        {position: dataScence['position'][0], up: dataScence['up'][0],},
+        {position: dataScence['position'][1], up: dataScence['up'][1],},
+        {position: dataScence['position'][2], up: dataScence['up'][2],},
+        {position: dataScence['position'][3], up: dataScence['up'][3],},
+        {position: dataScence['position'][4], up: dataScence['up'][4],},
+        // {position: dataScence['position'][5], up: dataScence['up'][5],},
     ].forEach((settings, ndx) => {
         material = new THREE.MeshBasicMaterial({side});
         material.color.setHSL(ndx / 6, .5, .5);
         mesh = new THREE.Mesh(geometry, material);
         mesh.up.set(...settings.up);
         mesh.lookAt(...settings.position);
-        mesh.position.set(...settings.position).multiplyScalar(size * .75)
+        mesh.position.set(...settings.position).multiplyScalar(size * .5)
         base.add(mesh)
     })
     scene.add(base)
