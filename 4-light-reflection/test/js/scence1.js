@@ -340,7 +340,7 @@ const initGuiTable = () => {
 
     const buttonMaterial = {
         add: function () {
-            material.metalness = metalnessCoef * Math.pow(cos, specularityCoef)
+            material.metalness = metalnessCoef * Math.pow(cos, 1/specularityCoef)
             material.roughness = roughnessCoef
             console.log(material.metalness)
             console.log(material.roughness)
